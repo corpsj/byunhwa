@@ -12,7 +12,7 @@ export const DEFAULT_DETAILS = `[알러지 및 주의사항]
 export const DEFAULT_ACCOUNT = {
   bankName: '국민은행',
   accountNumber: '1234-56-789012',
-  depositor: '변화 x PIRI',
+  depositor: '변화 x Piri Fleur',
   price: '80000',
 };
 

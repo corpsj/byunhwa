@@ -4,7 +4,7 @@ export default function Footer() {
     return (
         <footer className={styles.footer}>
             <div className={`container ${styles.container}`}>
-                <p>&copy; {new Date().getFullYear()} 변화 x PIRI. All rights reserved.</p>
+                <p>&copy; {new Date().getFullYear()} 변화 x Piri Fleur. All rights reserved.</p>
                 <div className={styles.contact}>
                     <a href="https://www.instagram.com/bye.on.hwa/" target="_blank" rel="noopener noreferrer">
                         Instagram: @bye.on.hwa

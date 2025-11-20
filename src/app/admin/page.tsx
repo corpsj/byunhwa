@@ -522,7 +522,7 @@ export default function AdminPage() {
               label="예금주"
               value={config.depositor}
               onChange={(e) => setConfig((prev) => ({ ...prev, depositor: e.target.value }))}
-              placeholder="예) 변화 x PIRI"
+              placeholder="예) 변화 x Piri Fleur"
             />
           </div>
           <Input
