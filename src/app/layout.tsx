@@ -4,8 +4,11 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 
 export const metadata: Metadata = {
-  title: "Byunhwa - Custom Flower Orders",
+  title: "변화 - 변화를 추구합니다.",
   description: "Order custom flowers from Byunhwa.",
+  icons: {
+    icon: '/logo.png',
+  },
 };
 
 export default function RootLayout({
