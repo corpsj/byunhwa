@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabaseServer } from '@/lib/supabase';
+import { getSupabaseServer } from '@/lib/supabase';
 import { notifyNewOrder } from '@/lib/notifications';
 
 export async function POST(req: NextRequest) {
@@ -17,7 +17,9 @@ export async function POST(req: NextRequest) {
     status: 'pending',
   };
 
-  const { data, error } = await supabaseServer
+  const supabase = getSupabaseServer();
+
+  const { data, error } = await supabase
     .from('orders')
     .insert(payload)
     .select()

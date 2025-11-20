@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabaseServer } from '@/lib/supabase';
+import { getSupabaseServer } from '@/lib/supabase';
 import { requireAdmin } from '@/lib/adminAuth';
 
 const ALLOWED_STATUSES = ['pending', 'confirmed', 'cancelled'];
@@ -16,7 +16,9 @@ export async function PATCH(req: NextRequest, context: { params: Promise<{ id: s
     return NextResponse.json({ error: 'Invalid status' }, { status: 400 });
   }
 
-  const { data, error } = await supabaseServer
+  const supabase = getSupabaseServer();
+
+  const { data, error } = await supabase
     .from('orders')
     .update({ status })
     .eq('id', id)

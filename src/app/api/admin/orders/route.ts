@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabaseServer } from '@/lib/supabase';
+import { getSupabaseServer } from '@/lib/supabase';
 import { requireAdmin } from '@/lib/adminAuth';
 
 export async function GET(req: NextRequest) {
@@ -10,7 +10,9 @@ export async function GET(req: NextRequest) {
   const status = searchParams.get('status');
   const schedule = searchParams.get('schedule');
 
-  let query = supabaseServer.from('orders').select('*').order('created_at', { ascending: false });
+  const supabase = getSupabaseServer();
+
+  let query = supabase.from('orders').select('*').order('created_at', { ascending: false });
 
   if (status) {
     query = query.eq('status', status);

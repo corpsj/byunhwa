@@ -1,10 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabaseServer } from '@/lib/supabase';
+import { getSupabaseServer } from '@/lib/supabase';
 import { defaultFormConfig } from '@/lib/formDefaults';
 import { requireAdmin } from '@/lib/adminAuth';
 
 export async function GET() {
-  const { data, error } = await supabaseServer
+  const supabase = getSupabaseServer();
+
+  const { data, error } = await supabase
     .from('form_config')
     .select('schedules, details, bank_name, account_number, depositor, price, updated_at')
     .order('updated_at', { ascending: false })
@@ -51,7 +53,9 @@ export async function PUT(req: NextRequest) {
     updated_at: new Date().toISOString(),
   };
 
-  const { data, error } = await supabaseServer
+  const supabase = getSupabaseServer();
+
+  const { data, error } = await supabase
     .from('form_config')
     .upsert(payload)
     .select()
