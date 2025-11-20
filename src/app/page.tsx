@@ -105,20 +105,7 @@ export default function Home() {
           특별한 원데이 클래스에 초대합니다.
         </p>
 
-        <div className={styles.features}>
-          <div className={styles.featureItem}>
-            <div>
-              <h3>1:1 Coaching</h3>
-              <p>초보자도 쉽게 따라할 수 있는<br />세심한 지도</p>
-            </div>
-          </div>
-          <div className={styles.featureItem}>
-            <div>
-              <h3>Premium Materials</h3>
-              <p>오랫동안 감상할 수 있는<br />최고급 소재 사용</p>
-            </div>
-          </div>
-        </div>
+
       </section>
 
       {/* Application Form */}
