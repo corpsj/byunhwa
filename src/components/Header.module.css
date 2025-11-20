@@ -13,6 +13,13 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+    display: flex;
+    justify-content: center;
+    /* Center logo for app feel */
+    align-items: center;
+    position: relative;
+    height: 44px;
+    /* Standard touch target height */
 }
 
 .logo {
@@ -35,8 +42,7 @@
 .logoWrapper {
     display: flex;
     align-items: center;
-    opacity: 0.9;
-    transition: var(--transition-smooth);
+    height: 100%;
 }
 
 .logoWrapper:hover {
@@ -46,12 +52,15 @@
 
 .logoImage {
     object-fit: contain;
-    height: auto;
+    height: 28px;
+    /* Smaller, cleaner logo */
+    width: auto;
 }
 
+/* Hide nav for now, or make it a bottom tab bar if needed. 
+   For this single page flow, we might not need top nav links. */
 .nav {
-    display: flex;
-    gap: 2rem;
+    display: none;
 }
 
 .navLink {

@@ -2,36 +2,52 @@
     display: inline-flex;
     justify-content: center;
     align-items: center;
-    padding: 0.8rem 2rem;
-    border-radius: 50px;
-    /* Pill shape */
-    font-weight: 500;
+    padding: 1rem 2rem;
+    /* Larger touch target */
+    border-radius: 16px;
+    /* More rounded */
+    font-weight: 600;
     cursor: pointer;
     transition: var(--transition-smooth);
     border: 1px solid transparent;
-    font-size: 1rem;
+    font-size: 1.05rem;
     font-family: inherit;
     letter-spacing: 0.02em;
+    width: 100%;
+    /* Full width by default on mobile */
+    position: relative;
+    overflow: hidden;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.btn:active {
+    transform: scale(0.98);
+    /* Tactile feedback */
 }
 
 .btn:disabled {
     opacity: 0.5;
     cursor: not-allowed;
+    transform: none;
 }
 
 .primary {
     background-color: var(--color-accent-main);
     color: #FFFFFF;
-    /* Always white text on accent */
     border-color: var(--color-accent-main);
-    box-shadow: 0 4px 12px rgba(114, 47, 55, 0.2);
+    box-shadow: 0 8px 20px rgba(114, 47, 55, 0.25);
 }
 
 .primary:hover:not(:disabled) {
     background-color: var(--color-accent-hover);
     border-color: var(--color-accent-hover);
+    box-shadow: 0 10px 25px rgba(114, 47, 55, 0.35);
     transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(114, 47, 55, 0.3);
+}
+
+.primary:active:not(:disabled) {
+    transform: translateY(0) scale(0.98);
+    box-shadow: 0 4px 10px rgba(114, 47, 55, 0.2);
 }
 
 .outline {
@@ -41,19 +57,23 @@
 }
 
 .outline:hover:not(:disabled) {
-    background-color: var(--color-text-main);
-    color: #FFFFFF;
-    transform: translateY(-2px);
+    background-color: rgba(0, 0, 0, 0.05);
+    color: var(--color-text-main);
+    transform: none;
 }
 
 .medium {
-    padding: 0.8rem 2rem;
+    padding: 0.9rem 2rem;
     font-size: 1rem;
 }
 
 .large {
-    padding: 1rem 2.5rem;
+    padding: 1.1rem 2.5rem;
     font-size: 1.1rem;
+}
+
+.fullWidth {
+    width: 100%;
 }
 
 .fullWidth {
