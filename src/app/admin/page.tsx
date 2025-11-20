@@ -311,14 +311,27 @@ export default function AdminPage() {
       <header className={styles.header}>
         <div>
           <p className={styles.kicker}>Admin</p>
-          <h1 className={styles.title}>수강 신청 관리</h1>
+          <h1 className={styles.title}>관리자 페이지</h1>
         </div>
         <div className={styles.headerActions}>
-          <Button variant="outline" size="medium" onClick={handleRefresh} disabled={ordersLoading || isRefreshing}>
-            {isRefreshing ? '새로고침 중...' : '새로고침'}
+          <Button
+            variant="outline"
+            size="medium"
+            className={styles.iconButton}
+            onClick={handleRefresh}
+            disabled={ordersLoading || isRefreshing}
+            title="새로고침"
+          >
+            ↻
           </Button>
-          <Button variant="outline" size="medium" onClick={handleLogout}>
-            로그아웃
+          <Button
+            variant="outline"
+            size="medium"
+            className={styles.iconButton}
+            onClick={handleLogout}
+            title="로그아웃"
+          >
+            ⎋
           </Button>
         </div>
       </header>
@@ -428,11 +441,8 @@ export default function AdminPage() {
                     <span className={`${styles.status} ${styles[order.status]}`}>{STATUS_LABELS[order.status]}</span>
                   </div>
                   <div className={styles.orderRow}>
-                    <p className={styles.orderSchedule}>
-                      희망: <span>{formatSchedule(order.schedule)}</span>
-                    </p>
+                    <p className={styles.orderSchedule}>{formatSchedule(order.schedule)}</p>
                     <p className={styles.orderCreated}>
-                      신청:{' '}
                       {new Date(order.created_at).toLocaleString('ko-KR', {
                         month: 'short',
                         day: 'numeric',
@@ -441,18 +451,17 @@ export default function AdminPage() {
                       })}
                     </p>
                   </div>
-                  <div className={styles.compactActions}>
-                    <label htmlFor={`status-${order.id}`}>상태 변경</label>
-                    <select
-                      id={`status-${order.id}`}
-                      value={order.status}
-                      onChange={(e) => handleStatusChange(order.id, e.target.value as OrderStatus)}
-                      disabled={statusUpdatingId === order.id}
-                    >
-                      <option value="confirmed">확정</option>
-                      <option value="pending">대기</option>
-                      <option value="cancelled">취소</option>
-                    </select>
+                  <div className={styles.statusChips} role="group" aria-label="상태 변경">
+                    {(['confirmed', 'pending', 'cancelled'] as OrderStatus[]).map((status) => (
+                      <button
+                        key={status}
+                        className={`${styles.chip} ${order.status === status ? styles.activeChip : ''}`}
+                        onClick={() => handleStatusChange(order.id, status)}
+                        disabled={statusUpdatingId === order.id}
+                      >
+                        {STATUS_LABELS[status]}
+                      </button>
+                    ))}
                   </div>
                 </div>
               ))}
