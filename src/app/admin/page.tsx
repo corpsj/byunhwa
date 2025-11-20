@@ -115,13 +115,55 @@ export default function AdminPage() {
     return `${pad(d.getMonth() + 1)}월 ${pad(d.getDate())}일 (${dayNames[d.getDay()]}) ${pad(d.getHours())}시`;
   };
 
-  const toDateTimeLocalValue = (value: string) => {
-    if (/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}/.test(value)) return value.slice(0, 16);
-    if (/^\d{4}-\d{2}-\d{2}$/.test(value)) return `${value}T00:00`;
+  const formatScheduleInput = (value: string) => {
     const d = new Date(value);
-    if (Number.isNaN(d.getTime())) return '';
+    if (Number.isNaN(d.getTime())) return value;
     const pad = (n: number) => n.toString().padStart(2, '0');
-    return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+    return `${pad(d.getMonth() + 1)}월 ${pad(d.getDate())}일 ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+  };
+
+  const parseInputToIso = (input: string, existing: string) => {
+    const digits = input.match(/\d+/g) || [];
+    const base = new Date(existing || Date.now());
+    let year = base.getFullYear();
+    let month = base.getMonth() + 1;
+    let day = base.getDate();
+    let hour = 0;
+    let minute = 0;
+
+    if (digits.length >= 5) {
+      // yyyy, mm, dd, hh, mm
+      year = Number(digits[0]);
+      month = Number(digits[1]);
+      day = Number(digits[2]);
+      hour = Number(digits[3]);
+      minute = Number(digits[4]);
+    } else if (digits.length === 4) {
+      // mm, dd, hh, mm
+      month = Number(digits[0]);
+      day = Number(digits[1]);
+      hour = Number(digits[2]);
+      minute = Number(digits[3]);
+    } else if (digits.length === 3) {
+      // mm, dd, hh
+      month = Number(digits[0]);
+      day = Number(digits[1]);
+      hour = Number(digits[2]);
+      minute = 0;
+    } else {
+      return existing;
+    }
+
+    const clamp = (val: number, min: number, max: number) => Math.min(Math.max(val, min), max);
+    month = clamp(month, 1, 12);
+    day = clamp(day, 1, 31);
+    hour = clamp(hour, 0, 23);
+    minute = clamp(minute, 0, 59);
+
+    const pad = (n: number) => n.toString().padStart(2, '0');
+    const iso = `${year}-${pad(month)}-${pad(day)}T${pad(hour)}:${pad(minute)}`;
+    const d = new Date(iso);
+    return Number.isNaN(d.getTime()) ? existing : iso;
   };
 
   const handleLogin = async () => {
@@ -207,7 +249,7 @@ export default function AdminPage() {
   const handleConfigChange = (index: number, value: string) => {
     setConfig((prev) => {
       const updated = [...prev.schedules];
-      updated[index] = value;
+      updated[index] = parseInputToIso(value, prev.schedules[index]);
       return { ...prev, schedules: updated };
     });
   };
@@ -409,10 +451,10 @@ export default function AdminPage() {
               <div key={`${schedule}-${index}`} className={styles.configRow}>
                 <Input
                   label={`일정 ${index + 1}`}
-                  type="datetime-local"
-                  value={toDateTimeLocalValue(schedule)}
+                  type="text"
+                  value={formatScheduleInput(schedule)}
                   onChange={(e) => handleConfigChange(index, e.target.value)}
-                  placeholder="예) 2024-12-24T14:00"
+                  placeholder="예) 12월 24일 14:00"
                 />
                 {config.schedules.length > 1 && (
                   <button className={styles.removeButton} onClick={() => removeScheduleRow(index)}>
