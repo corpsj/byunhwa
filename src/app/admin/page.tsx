@@ -188,6 +188,26 @@ export default function AdminPage() {
     }
   };
 
+  const handleDelete = async (id: string) => {
+    if (!confirm('정말 삭제하시겠습니까?')) return;
+    setStatusUpdatingId(id);
+    try {
+      const res = await fetch(`/api/admin/orders/${id}`, {
+        method: 'DELETE',
+      });
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data?.error || '삭제에 실패했습니다.');
+      }
+      setOrders((prev) => prev.filter((item) => item.id !== id));
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : '삭제에 실패했습니다.';
+      setFetchError(message);
+    } finally {
+      setStatusUpdatingId(null);
+    }
+  };
+
   const filteredOrders = useMemo(() => {
     const term = searchTerm.trim();
     return orders.filter((order) => {
@@ -451,17 +471,28 @@ export default function AdminPage() {
                       })}
                     </p>
                   </div>
-                  <div className={styles.statusChips} role="group" aria-label="상태 변경">
-                    {(['confirmed', 'pending', 'cancelled'] as OrderStatus[]).map((status) => (
-                      <button
-                        key={status}
-                        className={`${styles.chip} ${order.status === status ? styles.activeChip : ''}`}
-                        onClick={() => handleStatusChange(order.id, status)}
-                        disabled={statusUpdatingId === order.id}
-                      >
-                        {STATUS_LABELS[status]}
-                      </button>
-                    ))}
+                  <div className={styles.statusRow}>
+                    <div className={styles.statusChips} role="group" aria-label="상태 변경">
+                      {(['confirmed', 'pending', 'cancelled'] as OrderStatus[]).map((status) => (
+                        <button
+                          key={status}
+                          className={`${styles.chip} ${order.status === status ? styles.activeChip : ''}`}
+                          onClick={() => handleStatusChange(order.id, status)}
+                          disabled={statusUpdatingId === order.id}
+                        >
+                          {STATUS_LABELS[status]}
+                        </button>
+                      ))}
+                    </div>
+                    <button
+                      className={styles.iconDelete}
+                      onClick={() => handleDelete(order.id)}
+                      disabled={statusUpdatingId === order.id}
+                      title="삭제"
+                      aria-label="신청 삭제"
+                    >
+                      🗑
+                    </button>
                   </div>
                 </div>
               ))}

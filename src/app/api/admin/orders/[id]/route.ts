@@ -36,3 +36,26 @@ export async function PATCH(req: NextRequest, context: { params: Promise<{ id: s
 
   return NextResponse.json({ order: data });
 }
+
+export async function DELETE(req: NextRequest, context: { params: Promise<{ id: string }> | { id: string } }) {
+  const unauthorized = await requireAdmin();
+  if (unauthorized) return unauthorized;
+
+  const resolvedParams = await Promise.resolve(context.params);
+  const { id } = resolvedParams || {};
+
+  if (!id) {
+    return NextResponse.json({ error: 'Invalid id' }, { status: 400 });
+  }
+
+  const supabase = getSupabaseServer();
+
+  const { error } = await supabase.from('orders').delete().eq('id', id);
+
+  if (error) {
+    console.error('Failed to delete order', error);
+    return NextResponse.json({ error: 'Failed to delete order' }, { status: 500 });
+  }
+
+  return NextResponse.json({ ok: true });
+}

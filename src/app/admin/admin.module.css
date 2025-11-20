@@ -296,6 +296,27 @@
   font-size: 0.9rem;
 }
 
+.statusRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.4rem;
+}
+
+.iconDelete {
+  border: 1px solid #e0e0e0;
+  background: #fff5f5;
+  color: #b71d1d;
+  border-radius: 10px;
+  padding: 0.35rem 0.45rem;
+  cursor: pointer;
+}
+
+.iconDelete:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
 .status {
   padding: 0.15rem 0.6rem;
   border-radius: 999px;
