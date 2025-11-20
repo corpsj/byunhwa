@@ -187,16 +187,35 @@ export default function Home() {
                 - 수업 시작 3일 전까지 100% 환불 가능하며, 이후에는 재료 준비로 인해 환불이 불가합니다.<br />
                 - 수업 시작 10분 전까지 도착해주시기 바랍니다.
               </p>
+              <label className={styles.checkboxLabel}>
+                <input
+                  type="checkbox"
+                  checked={agreed}
+                  onChange={(e) => setAgreed(e.target.checked)}
+                  className={styles.checkboxInput}
+                />
+                <span className={styles.checkboxText}>위 내용을 확인하였으며 동의합니다. (필수)</span>
+              </label>
             </div>
-            <div className={styles.featureItem}>
-              <h3>Fresh Flowers</h3>
-              <p>매일 아침 들어오는<br />신선한 꽃만을 사용합니다.</p>
-            </div>
-            <div className={styles.featureItem}>
-              <h3>Delivery</h3>
-              <p>원하시는 날짜와 시간에<br />안전하게 배송해 드립니다.</p>
-            </div>
-          </section>
+            {errors.agreement && <div className={styles.errorMessage}>{errors.agreement}</div>}
+          </div>
         </div>
-        );
+
+        {/* Sticky Submit Button */}
+        <div className={styles.submitWrapper}>
+          <Button
+            onClick={handleSubmit}
+            disabled={isSubmitting}
+            fullWidth
+            size="large"
+          >
+            {isSubmitting ? '신청 중...' : '클래스 신청하기'}
+          </Button>
+          <p className={styles.notice}>
+            신청 후 입금 순으로 확정됩니다.
+          </p>
+        </div>
+      </div>
+    </main>
+  );
 }
