@@ -4,7 +4,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 
 export const metadata: Metadata = {
-  title: "변화 x PIRI - 변화를 추구합니다.",
+  title: "변화 x PIRI - Christmas Tree Class",
   description: "변화 x PIRI Christmas Tree Class 신청",
   icons: {
     icon: '/logo.png',
