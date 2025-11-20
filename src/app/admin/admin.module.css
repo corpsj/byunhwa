@@ -35,20 +35,27 @@
 
 .headerActions {
   display: flex;
-  gap: 0.5rem;
-  flex-wrap: wrap;
+  gap: 0.35rem;
+  flex-wrap: nowrap;
+  margin-left: auto;
 }
 
-.iconButton :global(span) {
+.headerIcon {
+  border: none;
+  background: transparent;
+  color: var(--color-text-muted);
   font-size: 1rem;
+  padding: 0.2rem 0.3rem;
+  cursor: pointer;
 }
 
-.iconButton {
-  min-width: 44px;
-  padding: 0.4rem;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
+.headerIcon:hover {
+  color: var(--color-text-main);
+}
+
+.headerIcon:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
 }
 
 .banner {

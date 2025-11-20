@@ -334,25 +334,23 @@ export default function AdminPage() {
           <h1 className={styles.title}>관리자 페이지</h1>
         </div>
         <div className={styles.headerActions}>
-          <Button
-            variant="outline"
-            size="medium"
-            className={styles.iconButton}
+          <button
+            className={styles.headerIcon}
             onClick={handleRefresh}
             disabled={ordersLoading || isRefreshing}
             title="새로고침"
+            aria-label="새로고침"
           >
             ↻
-          </Button>
-          <Button
-            variant="outline"
-            size="medium"
-            className={styles.iconButton}
+          </button>
+          <button
+            className={styles.headerIcon}
             onClick={handleLogout}
             title="로그아웃"
+            aria-label="로그아웃"
           >
             ⎋
-          </Button>
+          </button>
         </div>
       </header>
 
