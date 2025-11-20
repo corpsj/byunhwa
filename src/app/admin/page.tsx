@@ -112,7 +112,13 @@ export default function AdminPage() {
     void bootstrap();
   }, [bootstrap]);
 
-  const formatSchedule = (value: string) => value;
+  const formatSchedule = (value: string) => {
+    const d = new Date(value);
+    if (Number.isNaN(d.getTime())) return value;
+    const pad = (n: number) => n.toString().padStart(2, '0');
+    const dayNames = ['일', '월', '화', '수', '목', '금', '토'];
+    return `${pad(d.getMonth() + 1)}월 ${pad(d.getDate())}일 (${dayNames[d.getDay()]}) ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+  };
 
   const handleLogin = async () => {
     setFetchError('');
@@ -232,6 +238,7 @@ export default function AdminPage() {
         const data = await res.json();
         throw new Error(data?.error || '설정 저장에 실패했습니다.');
       }
+      await loadConfig();
     } catch (error: unknown) {
       const message = error instanceof Error ? error.message : '설정 저장에 실패했습니다.';
       setFetchError(message);
@@ -410,7 +417,7 @@ export default function AdminPage() {
                   >
                     {availableSchedules.map((option) => (
                       <option key={option} value={option}>
-                        {option}
+                        {formatSchedule(option)}
                       </option>
                     ))}
                   </select>
