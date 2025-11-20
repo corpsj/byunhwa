@@ -38,9 +38,11 @@ export default function AdminPage() {
   const [password, setPassword] = useState('');
   const [orders, setOrders] = useState<Order[]>([]);
   const [ordersLoading, setOrdersLoading] = useState(true);
+  const [isRefreshing, setIsRefreshing] = useState(false);
   const [fetchError, setFetchError] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
   const [scheduleFilter, setScheduleFilter] = useState('');
+  const [searchTerm, setSearchTerm] = useState('');
   const [statusUpdatingId, setStatusUpdatingId] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<'orders' | 'settings'>('orders');
 
@@ -102,6 +104,12 @@ export default function AdminPage() {
       setOrdersLoading(false);
     }
   }, [loadConfig]);
+
+  const handleRefresh = async () => {
+    setIsRefreshing(true);
+    await bootstrap();
+    setIsRefreshing(false);
+  };
 
   useEffect(() => {
     void bootstrap();
@@ -181,12 +189,16 @@ export default function AdminPage() {
   };
 
   const filteredOrders = useMemo(() => {
+    const term = searchTerm.trim();
     return orders.filter((order) => {
       const matchesStatus = statusFilter ? order.status === statusFilter : true;
       const matchesSchedule = scheduleFilter ? order.schedule === scheduleFilter : true;
-      return matchesStatus && matchesSchedule;
+      const matchesSearch = term
+        ? order.name.includes(term) || order.phone.includes(term)
+        : true;
+      return matchesStatus && matchesSchedule && matchesSearch;
     });
-  }, [orders, statusFilter, scheduleFilter]);
+  }, [orders, statusFilter, scheduleFilter, searchTerm]);
 
   const summary = useMemo(() => {
     const statusCounts: Record<string, number> = { pending: 0, confirmed: 0, cancelled: 0 };
@@ -304,6 +316,9 @@ export default function AdminPage() {
           <h1 className={styles.title}>수강 신청 관리</h1>
         </div>
         <div className={styles.headerActions}>
+          <Button variant="outline" size="medium" onClick={handleRefresh} disabled={ordersLoading || isRefreshing}>
+            {isRefreshing ? '새로고침 중...' : '새로고침'}
+          </Button>
           <Button variant="outline" size="medium" onClick={handleLogout}>
             로그아웃
           </Button>
@@ -356,13 +371,32 @@ export default function AdminPage() {
 
           <section className={styles.filters}>
             <div className={styles.filterControl}>
+              <label>검색 (이름/연락처)</label>
+              <input
+                type="text"
+                value={searchTerm}
+                placeholder="예) 홍길동 / 010"
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+            </div>
+            <div className={styles.filterControl}>
               <label>상태</label>
-              <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
-                <option value="">전체</option>
-                <option value="pending">대기</option>
-                <option value="confirmed">확정</option>
-                <option value="cancelled">취소</option>
-              </select>
+              <div className={styles.chipRow}>
+                {[
+                  { label: '전체', value: '' },
+                  { label: '확정', value: 'confirmed' },
+                  { label: '대기', value: 'pending' },
+                  { label: '취소', value: 'cancelled' },
+                ].map((opt) => (
+                  <button
+                    key={opt.value || 'all'}
+                    className={`${styles.chip} ${statusFilter === opt.value ? styles.activeChip : ''}`}
+                    onClick={() => setStatusFilter(opt.value)}
+                  >
+                    {opt.label}
+                  </button>
+                ))}
+              </div>
             </div>
             <div className={styles.filterControl}>
               <label>일정</label>
