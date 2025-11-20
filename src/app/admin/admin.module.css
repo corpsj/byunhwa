@@ -12,6 +12,8 @@
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
+  position: relative;
+  padding-right: 2.5rem;
 }
 
 .kicker {
@@ -35,18 +37,21 @@
 
 .headerActions {
   display: flex;
-  gap: 0.35rem;
+  gap: 0.25rem;
   flex-wrap: nowrap;
-  margin-left: auto;
+  position: absolute;
+  top: 0.2rem;
+  right: 0.2rem;
 }
 
 .headerIcon {
   border: none;
   background: transparent;
   color: var(--color-text-muted);
-  font-size: 1rem;
-  padding: 0.2rem 0.3rem;
+  font-size: 0.95rem;
+  padding: 0.15rem 0.2rem;
   cursor: pointer;
+  line-height: 1;
 }
 
 .headerIcon:hover {
