@@ -285,6 +285,92 @@
   color: var(--color-text-muted);
 }
 
+/* Radio Group Styles */
+.radioGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.radioLabel {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.2rem;
+  background-color: var(--color-bg-input);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: var(--transition-smooth);
+  border: 1px solid transparent;
+}
+
+.radioLabel.selected {
+  background-color: #FFFFFF;
+  border-color: var(--color-accent-main);
+  box-shadow: 0 4px 12px rgba(114, 47, 55, 0.1);
+}
+
+.radioInput {
+  display: none;
+  /* Hide default radio */
+}
+
+.radioText {
+  font-size: 1rem;
+  color: var(--color-text-main);
+  font-weight: 500;
+}
+
+.checkIcon {
+  color: var(--color-accent-main);
+  font-weight: bold;
+}
+
+/* Agreement Styles */
+.agreementBox {
+  background-color: var(--color-bg-input);
+  padding: 1.2rem;
+  border-radius: 12px;
+}
+
+.agreementText {
+  font-size: 0.9rem;
+  color: var(--color-text-muted);
+  line-height: 1.6;
+  margin-bottom: 1.5rem;
+  white-space: pre-line;
+}
+
+.checkboxLabel {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  cursor: pointer;
+  padding-top: 0.5rem;
+  border-top: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.checkboxInput {
+  width: 20px;
+  height: 20px;
+  accent-color: var(--color-accent-main);
+  cursor: pointer;
+}
+
+.checkboxText {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--color-text-main);
+}
+
+.errorMessage {
+  font-size: 0.85rem;
+  color: var(--color-error);
+  margin-top: 0.5rem;
+  display: flex;
+  align-items: center;
+}
+
 .actions {
   display: flex;
   justify-content: center;

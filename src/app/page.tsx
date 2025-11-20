@@ -1,17 +1,46 @@
 'use client';
 
-import { useState, FormEvent } from 'react';
-import Input from '@/components/Input';
-import Select from '@/components/Select';
-import Button from '@/components/Button';
+import { useState, useEffect } from 'react';
 import styles from './page.module.css';
+import Button from '@/components/Button';
+import Input from '@/components/Input';
 
 export default function Home() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [orderSuccess, setOrderSuccess] = useState(false);
+  const [mounted, setMounted] = useState(false);
 
-  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
+  // Student Info
+  const [name, setName] = useState('');
+  const [phone, setPhone] = useState('');
+
+  // Class Schedule
+  const [selectedSchedule, setSelectedSchedule] = useState('');
+
+  // Agreement
+  const [agreed, setAgreed] = useState(false);
+
+  // Validation Errors
+  const [errors, setErrors] = useState<{ [key: string]: string }>({});
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const validateForm = () => {
+    const newErrors: { [key: string]: string } = {};
+    if (!name.trim()) newErrors.name = '수강생 성함을 입력해주세요.';
+    if (!phone.trim()) newErrors.phone = '연락처를 입력해주세요.';
+    if (!selectedSchedule) newErrors.schedule = '수강 희망 날짜를 선택해주세요.';
+    if (!agreed) newErrors.agreement = '주의사항에 동의해주세요.';
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleSubmit = async () => {
+    if (!validateForm()) return;
+
     setIsSubmitting(true);
 
     // Simulate API call
@@ -20,148 +49,154 @@ export default function Home() {
     setIsSubmitting(false);
     setOrderSuccess(true);
     window.scrollTo({ top: 0, behavior: 'smooth' });
-  }
+  };
 
   const resetOrder = () => {
     setOrderSuccess(false);
+    setName('');
+    setPhone('');
+    setSelectedSchedule('');
+    setAgreed(false);
+    setErrors({});
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
+  if (!mounted) return null;
+
+  // Success State
+  if (orderSuccess) {
+    return (
+      <div className={styles.successContainer}>
+        <div className={styles.successCard}>
+          <div className={styles.icon}>🎄</div>
+          <h2 className={styles.successTitle}>신청이 완료되었습니다!</h2>
+          <p className={styles.successMessage}>
+            크리스마스 트리 원데이 클래스 신청이 접수되었습니다.<br />
+            입금 확인 후 확정 문자를 보내드립니다.
+          </p>
+
+          <div className={styles.bankInfo}>
+            <div className={styles.bankLabel}>입금 계좌 안내</div>
+            <div className={styles.account}>국민은행 1234-56-789012</div>
+            <div className={styles.depositor}>예금주: 변화(ByunHwa)</div>
+          </div>
+
+          <div className={styles.actions}>
+            <Button onClick={resetOrder} variant="outline" size="medium">
+              추가 신청하기
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Main Form State
   return (
-    <div className={styles.container}>
+    <main className={styles.main}>
+      {/* Hero Section */}
       <section className={styles.hero}>
         <h1 className={styles.title}>
-          당신의 마음을 담은<br />
-          <span className={styles.highlight}>변화</span>의 꽃
+          Christmas<br />
+          <span className={styles.highlight}>Tree Class</span>
         </h1>
         <p className={styles.subtitle}>
-          특별한 날, 소중한 사람에게<br />
-          세상에 하나뿐인 꽃을 선물하세요.
+          나만의 크리스마스 트리를 만드는<br />
+          특별한 원데이 클래스에 초대합니다.
         </p>
-      </section>
 
-      {orderSuccess ? (
-        <div className={styles.successContainer}>
-          <div className={styles.successCard}>
-            <div className={styles.icon}>✓</div>
-            <h2 className={styles.successTitle}>주문이 접수되었습니다</h2>
-            <p className={styles.successMessage}>
-              아래 계좌로 입금해 주시면<br />
-              확인 후 제작이 진행됩니다.
-            </p>
-
-            <div className={styles.bankInfo}>
-              <p className={styles.bankLabel}>입금 계좌 안내</p>
-              <p className={styles.account}>신한은행 110-000-000000</p>
-              <p className={styles.depositor}>예금주: 변화(홍길동)</p>
+        <div className={styles.features}>
+          <div className={styles.featureItem}>
+            <div>
+              <h3>1:1 Coaching</h3>
+              <p>초보자도 쉽게 따라할 수 있는<br />세심한 지도</p>
             </div>
-
-            <div className={styles.actions}>
-              <Button variant="outline" onClick={resetOrder}>추가 주문하기</Button>
+          </div>
+          <div className={styles.featureItem}>
+            <div>
+              <h3>Premium Materials</h3>
+              <p>오랫동안 감상할 수 있는<br />최고급 소재 사용</p>
             </div>
           </div>
         </div>
-      ) : (
-        <div className={styles.orderContainer}>
-          <form onSubmit={handleSubmit} className={styles.form}>
-            <section className={styles.section}>
-              <h2 className={styles.sectionTitle}>1. 주문자 정보</h2>
-              <Input label="성함" name="senderName" placeholder="홍길동" required />
-              <Input label="연락처" name="senderPhone" placeholder="010-0000-0000" required />
-            </section>
+      </section>
 
-            <section className={styles.section}>
-              <h2 className={styles.sectionTitle}>2. 받으시는 분 정보</h2>
-              <Input label="성함" name="recipientName" placeholder="김철수" required />
-              <Input label="연락처" name="recipientPhone" placeholder="010-0000-0000" required />
-              <Input label="주소" name="address" placeholder="서울시 강남구..." required />
-            </section>
+      {/* Application Form */}
+      <div className={styles.orderContainer} id="order-form">
+        <h2 className={styles.formTitle}>Class Application</h2>
+        <p className={styles.formDescription}>
+          아래 양식을 작성하여 클래스를 신청해주세요.
+        </p>
 
-            <section className={styles.section}>
-              <h2 className={styles.sectionTitle}>3. 배송 정보</h2>
-              <div className={styles.row}>
-                <Input label="배송 날짜" name="deliveryDate" type="date" required />
-                <Input label="배송 시간" name="deliveryTime" type="time" required />
-              </div>
-              <Select
-                label="배송 방법"
-                name="deliveryMethod"
-                required
-                options={[
-                  { value: 'pickup', label: '매장 픽업' },
-                  { value: 'quick', label: '퀵 배송 (서울/경기)' },
-                  { value: 'parcel', label: '택배 (전국)' },
-                ]}
-              />
-            </section>
+        <div className={styles.form}>
+          {/* Student Info */}
+          <div className={styles.section}>
+            <h3 className={styles.sectionTitle}>01. 수강생 정보</h3>
+            <Input
+              label="성함"
+              placeholder="홍길동"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              required
+              error={errors.name}
+            />
+            <Input
+              label="연락처"
+              placeholder="010-0000-0000"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+              type="tel"
+              required
+              error={errors.phone}
+            />
+          </div>
 
-            <section className={styles.section}>
-              <h2 className={styles.sectionTitle}>4. 상품 정보</h2>
-              <Select
-                label="상품 종류"
-                name="productType"
-                required
-                options={[
-                  { value: 'bouquet', label: '꽃다발' },
-                  { value: 'basket', label: '꽃바구니' },
-                  { value: 'box', label: '플라워 박스' },
-                  { value: 'vase', label: '화병 꽂이' },
-                ]}
-              />
-              <Select
-                label="가격대"
-                name="priceRange"
-                required
-                options={[
-                  { value: '50000', label: '50,000원 ~' },
-                  { value: '80000', label: '80,000원 ~' },
-                  { value: '100000', label: '100,000원 ~' },
-                  { value: '150000', label: '150,000원 ~' },
-                  { value: 'custom', label: '상담 후 결정' },
-                ]}
-              />
-              <Input
-                label="원하시는 색감이나 스타일"
-                name="style"
-                placeholder="예: 파스텔톤으로 화사하게, 핑크&화이트 조합 등"
-              />
-              <div className={styles.textareaWrapper}>
-                <label className={styles.label}>메시지 카드 내용</label>
-                <textarea
-                  className={styles.textarea}
-                  name="message"
-                  placeholder="카드에 적을 내용을 입력해 주세요."
-                  rows={4}
-                />
-              </div>
-            </section>
+          {/* Class Schedule */}
+          <div className={styles.section}>
+            <h3 className={styles.sectionTitle}>02. 수강 희망 일정 (택 1)</h3>
+            <div className={styles.radioGroup}>
+              {[
+                '12월 20일 (금) 19:00',
+                '12월 21일 (토) 14:00',
+                '12월 22일 (일) 14:00'
+              ].map((schedule) => (
+                <label key={schedule} className={`${styles.radioLabel} ${selectedSchedule === schedule ? styles.selected : ''}`}>
+                  <input
+                    type="radio"
+                    name="schedule"
+                    value={schedule}
+                    checked={selectedSchedule === schedule}
+                    onChange={(e) => setSelectedSchedule(e.target.value)}
+                    className={styles.radioInput}
+                  />
+                  <span className={styles.radioText}>{schedule}</span>
+                  {selectedSchedule === schedule && <span className={styles.checkIcon}>✓</span>}
+                </label>
+              ))}
+            </div>
+            {errors.schedule && <div className={styles.errorMessage}>{errors.schedule}</div>}
+          </div>
 
-            <div className={styles.submitWrapper}>
-              <Button type="submit" size="large" fullWidth disabled={isSubmitting}>
-                {isSubmitting ? '주문 제출 중...' : '주문하기'}
-              </Button>
-              <p className={styles.notice}>
-                * 주문 제출 후 입금 안내가 표시됩니다.
+          {/* Agreement */}
+          <div className={styles.section}>
+            <h3 className={styles.sectionTitle}>03. 주의사항 동의</h3>
+            <div className={styles.agreementBox}>
+              <p className={styles.agreementText}>
+                <strong>[알러지 및 주의사항]</strong><br />
+                - 생화 및 식물 소재를 다루므로 꽃가루 알러지가 있으신 분은 주의가 필요합니다.<br />
+                - 수업 시작 3일 전까지 100% 환불 가능하며, 이후에는 재료 준비로 인해 환불이 불가합니다.<br />
+                - 수업 시작 10분 전까지 도착해주시기 바랍니다.
               </p>
             </div>
-          </form>
+            <div className={styles.featureItem}>
+              <h3>Fresh Flowers</h3>
+              <p>매일 아침 들어오는<br />신선한 꽃만을 사용합니다.</p>
+            </div>
+            <div className={styles.featureItem}>
+              <h3>Delivery</h3>
+              <p>원하시는 날짜와 시간에<br />안전하게 배송해 드립니다.</p>
+            </div>
+          </section>
         </div>
-      )}
-
-      <section className={styles.features}>
-        <div className={styles.featureItem}>
-          <h3>Custom Made</h3>
-          <p>원하시는 색감과 스타일로<br />정성껏 제작해 드립니다.</p>
-        </div>
-        <div className={styles.featureItem}>
-          <h3>Fresh Flowers</h3>
-          <p>매일 아침 들어오는<br />신선한 꽃만을 사용합니다.</p>
-        </div>
-        <div className={styles.featureItem}>
-          <h3>Delivery</h3>
-          <p>원하시는 날짜와 시간에<br />안전하게 배송해 드립니다.</p>
-        </div>
-      </section>
-    </div>
-  );
+        );
 }
