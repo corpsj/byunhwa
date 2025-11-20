@@ -3,6 +3,9 @@ import { getSupabaseServer } from '@/lib/supabase';
 import { defaultFormConfig } from '@/lib/formDefaults';
 import { requireAdmin } from '@/lib/adminAuth';
 
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 const normalizeSchedules = (value: unknown): string[] => {
   const normalizeDateTime = (val: string) => {
     const trimmed = val.trim();
