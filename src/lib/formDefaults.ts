@@ -1,5 +1,9 @@
-// YYYY-MM-DD 포맷의 날짜 문자열
-export const DEFAULT_SCHEDULES = ['2024-12-20', '2024-12-21', '2024-12-22'];
+// YYYY-MM-DDTHH:mm 포맷의 로컬 날짜/시간 문자열
+export const DEFAULT_SCHEDULES = [
+  '2024-12-20T19:00',
+  '2024-12-21T14:00',
+  '2024-12-22T14:00',
+];
 
 export const DEFAULT_DETAILS = `[알러지 및 주의사항]
 - 편백·침엽수 등 수목 소재 알러지가 있는 분은 수업 참여 전 주의가 필요합니다.

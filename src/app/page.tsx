@@ -53,14 +53,11 @@ export default function Home() {
   }, []);
 
   const formatSchedule = (value: string) => {
-    if (/^\d{4}-\d{2}-\d{2}$/.test(value)) {
-      try {
-        return new Date(value).toLocaleDateString('ko-KR', { dateStyle: 'long' });
-      } catch {
-        return value;
-      }
-    }
-    return value;
+    const d = new Date(value);
+    if (Number.isNaN(d.getTime())) return value;
+    const pad = (n: number) => n.toString().padStart(2, '0');
+    const dayNames = ['일', '월', '화', '수', '목', '금', '토'];
+    return `${pad(d.getMonth() + 1)}월 ${pad(d.getDate())}일 (${dayNames[d.getDay()]}) ${pad(d.getHours())}시`;
   };
 
   const validateForm = () => {

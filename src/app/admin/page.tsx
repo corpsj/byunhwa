@@ -108,14 +108,20 @@ export default function AdminPage() {
   }, [bootstrap]);
 
   const formatSchedule = (value: string) => {
-    if (/^\d{4}-\d{2}-\d{2}$/.test(value)) {
-      try {
-        return new Date(value).toLocaleDateString('ko-KR', { dateStyle: 'medium' });
-      } catch {
-        return value;
-      }
-    }
-    return value;
+    const d = new Date(value);
+    if (Number.isNaN(d.getTime())) return value;
+    const pad = (n: number) => n.toString().padStart(2, '0');
+    const dayNames = ['일', '월', '화', '수', '목', '금', '토'];
+    return `${pad(d.getMonth() + 1)}월 ${pad(d.getDate())}일 (${dayNames[d.getDay()]}) ${pad(d.getHours())}시`;
+  };
+
+  const toDateTimeLocalValue = (value: string) => {
+    if (/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}/.test(value)) return value.slice(0, 16);
+    if (/^\d{4}-\d{2}-\d{2}$/.test(value)) return `${value}T00:00`;
+    const d = new Date(value);
+    if (Number.isNaN(d.getTime())) return '';
+    const pad = (n: number) => n.toString().padStart(2, '0');
+    return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
   };
 
   const handleLogin = async () => {
@@ -335,7 +341,7 @@ export default function AdminPage() {
                 <option value="">전체</option>
                 {config.schedules.map((schedule) => (
                   <option key={schedule} value={schedule}>
-                    {schedule}
+                    {formatSchedule(schedule)}
                   </option>
                 ))}
               </select>
@@ -361,7 +367,7 @@ export default function AdminPage() {
                     <span className={`${styles.status} ${styles[order.status]}`}>{STATUS_LABELS[order.status]}</span>
                   </div>
                   <div className={styles.orderRow}>
-                    <p className={styles.orderMeta}>{order.schedule}</p>
+                    <p className={styles.orderMeta}>{formatSchedule(order.schedule)}</p>
                     <p className={styles.orderMeta}>
                       {new Date(order.created_at).toLocaleString('ko-KR', {
                         month: 'short',
@@ -403,10 +409,10 @@ export default function AdminPage() {
               <div key={`${schedule}-${index}`} className={styles.configRow}>
                 <Input
                   label={`일정 ${index + 1}`}
-                  type="date"
-                  value={schedule}
+                  type="datetime-local"
+                  value={toDateTimeLocalValue(schedule)}
                   onChange={(e) => handleConfigChange(index, e.target.value)}
-                  placeholder="예) 2024-12-24"
+                  placeholder="예) 2024-12-24T14:00"
                 />
                 {config.schedules.length > 1 && (
                   <button className={styles.removeButton} onClick={() => removeScheduleRow(index)}>

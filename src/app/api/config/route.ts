@@ -4,36 +4,62 @@ import { defaultFormConfig } from '@/lib/formDefaults';
 import { requireAdmin } from '@/lib/adminAuth';
 
 const normalizeSchedules = (value: unknown): string[] => {
-  const normalizeDate = (val: string) => {
+  const normalizeDateTime = (val: string) => {
     const trimmed = val.trim();
-    // Accept yyyy-mm-dd
-    const isIsoDate = /^\d{4}-\d{2}-\d{2}$/.test(trimmed);
-    if (!isIsoDate) return '';
-    const d = new Date(trimmed);
-    return Number.isNaN(d.getTime()) ? '' : trimmed;
+    if (!trimmed) return '';
+
+    // Accept yyyy-mm-dd or yyyy-mm-ddThh:mm (plus optional seconds/timezone)
+    const match = trimmed.match(/^(\d{4}-\d{2}-\d{2})(?:[T\s](\d{2}):(\d{2}))?/);
+    if (!match) return '';
+
+    const datePart = match[1];
+    const hour = match[2] ?? '00';
+    const minute = match[3] ?? '00';
+
+    const hourNum = Number(hour);
+    const minuteNum = Number(minute);
+
+    if (
+      !Number.isFinite(hourNum) ||
+      !Number.isFinite(minuteNum) ||
+      hourNum < 0 ||
+      hourNum > 23 ||
+      minuteNum < 0 ||
+      minuteNum > 59
+    ) {
+      return '';
+    }
+
+    const isoLocal = `${datePart}T${hourNum.toString().padStart(2, '0')}:${minuteNum
+      .toString()
+      .padStart(2, '0')}`;
+    const d = new Date(isoLocal);
+    return Number.isNaN(d.getTime()) ? '' : isoLocal;
   };
 
+  const handleArray = (arr: unknown[]) =>
+    arr.map((item) => normalizeDateTime(String(item))).filter(Boolean);
+
   if (Array.isArray(value)) {
-    return value
-      .map((item) => normalizeDate(String(item)))
-      .filter(Boolean);
+    return handleArray(value);
   }
 
   if (typeof value === 'string') {
     try {
       const parsed = JSON.parse(value);
       if (Array.isArray(parsed)) {
-          return parsed
-            .map((item) => normalizeDate(String(item)))
-            .filter(Boolean);
+        return handleArray(parsed);
       }
     } catch {
       // not JSON, fall through
     }
-    return value
-      .split(/[\n,]+/)
-      .map((item) => normalizeDate(item))
-      .filter(Boolean);
+
+    return handleArray(
+      value
+        .split(/[\n,]+/)
+        .map((item) => item.trim())
+        .filter(Boolean)
+    );
   }
 
   return [];
@@ -88,9 +114,7 @@ export async function PUT(req: NextRequest) {
 
   const { schedules, details, bankName, accountNumber, depositor, price } = await req.json();
 
-  const parsedSchedules = Array.isArray(schedules)
-    ? schedules.map((item: string) => String(item).trim()).filter(Boolean)
-    : [];
+  const parsedSchedules = normalizeSchedules(schedules);
 
   const payload = {
     id: 1,
