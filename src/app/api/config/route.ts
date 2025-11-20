@@ -26,6 +26,20 @@ const normalizeSchedules = (value: unknown): string[] => {
   return [];
 };
 
+const normalizeStringField = (value: unknown, fallback: string) => {
+  const normalized = value ? String(value).trim() : '';
+  return normalized || fallback;
+};
+
+const normalizePrice = (value: unknown) => {
+  const numeric = typeof value === 'number'
+    ? value
+    : Number(String(value || '').replace(/[^\d]/g, ''));
+  return Number.isFinite(numeric) && numeric > 0
+    ? numeric.toString()
+    : defaultFormConfig.price;
+};
+
 export async function GET() {
   const supabase = getSupabaseServer();
 
@@ -46,11 +60,11 @@ export async function GET() {
 
   return NextResponse.json({
     schedules,
-    details: record?.details || defaultFormConfig.details,
-    bankName: record?.bank_name || defaultFormConfig.bankName,
-    accountNumber: record?.account_number || defaultFormConfig.accountNumber,
-    depositor: record?.depositor || defaultFormConfig.depositor,
-    price: record?.price || defaultFormConfig.price,
+    details: normalizeStringField(record?.details, defaultFormConfig.details),
+    bankName: normalizeStringField(record?.bank_name, defaultFormConfig.bankName),
+    accountNumber: normalizeStringField(record?.account_number, defaultFormConfig.accountNumber),
+    depositor: normalizeStringField(record?.depositor, defaultFormConfig.depositor),
+    price: normalizePrice(record?.price),
     updatedAt: record?.updated_at || null,
   });
 }
@@ -72,7 +86,7 @@ export async function PUT(req: NextRequest) {
     bank_name: bankName ? String(bankName).trim() : defaultFormConfig.bankName,
     account_number: accountNumber ? String(accountNumber).trim() : defaultFormConfig.accountNumber,
     depositor: depositor ? String(depositor).trim() : defaultFormConfig.depositor,
-    price: Number.isFinite(Number(price)) ? Number(price).toString() : defaultFormConfig.price,
+    price: normalizePrice(price),
     updated_at: new Date().toISOString(),
   };
 
