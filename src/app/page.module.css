@@ -297,7 +297,6 @@
   display: flex;
   flex-direction: column;
   gap: 0.8rem;
-  padding-right: 0.35rem;
 }
 
 .radioLabel {
@@ -310,7 +309,6 @@
   cursor: pointer;
   transition: var(--transition-smooth);
   border: 1px solid transparent;
-  gap: 0.6rem;
 }
 
 .radioLabel.selected {
@@ -325,43 +323,14 @@
 }
 
 .radioText {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
   font-size: 1rem;
   color: var(--color-text-main);
   font-weight: 500;
-  gap: 0.2rem;
-}
-
-.radioDate {
-  font-size: 0.95rem;
-  font-weight: 700;
-}
-
-.radioTime {
-  font-size: 0.9rem;
-  color: var(--color-text-muted);
 }
 
 .checkIcon {
   color: var(--color-accent-main);
   font-weight: bold;
-}
-
-.scheduleScroll {
-  max-height: 260px;
-  overflow-y: auto;
-  padding-right: 0.1rem;
-}
-
-.scheduleScroll::-webkit-scrollbar {
-  width: 6px;
-}
-
-.scheduleScroll::-webkit-scrollbar-thumb {
-  background: rgba(0, 0, 0, 0.1);
-  border-radius: 50px;
 }
 
 /* Agreement Styles */

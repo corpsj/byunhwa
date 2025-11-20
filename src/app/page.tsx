@@ -52,25 +52,7 @@ export default function Home() {
     fetchConfig();
   }, []);
 
-  const parseSchedule = (value: string) => {
-    const d = new Date(value);
-    const pad = (n: number) => n.toString().padStart(2, '0');
-    if (Number.isNaN(d.getTime())) {
-      return {
-        label: value,
-        date: value,
-        day: '',
-        time: '',
-      };
-    }
-    const dayNames = ['일', '월', '화', '수', '목', '금', '토'];
-    return {
-      label: `${pad(d.getMonth() + 1)}월 ${pad(d.getDate())}일 (${dayNames[d.getDay()]}) ${pad(d.getHours())}:${pad(d.getMinutes())}`,
-      date: `${pad(d.getMonth() + 1)}월 ${pad(d.getDate())}일`,
-      day: dayNames[d.getDay()],
-      time: `${pad(d.getHours())}:${pad(d.getMinutes())}`,
-    };
-  };
+  const formatSchedule = (value: string) => value;
 
   const validateForm = () => {
     const newErrors: { [key: string]: string } = {};
@@ -207,34 +189,24 @@ export default function Home() {
           {/* Class Schedule */}
           <div className={styles.section}>
             <h3 className={styles.sectionTitle}>02. 수강 희망 일정 (택 1)</h3>
-            <div className={styles.scheduleScroll}>
-              <div className={styles.radioGroup}>
-                {schedules.map((schedule) => {
-                  const parsed = parseSchedule(schedule);
-                  return (
-                    <label
-                      key={schedule}
-                      className={`${styles.radioLabel} ${selectedSchedule === schedule ? styles.selected : ''}`}
-                    >
-                      <input
-                        type="radio"
-                        name="schedule"
-                        value={schedule}
-                        checked={selectedSchedule === schedule}
-                        onChange={(e) => setSelectedSchedule(e.target.value)}
-                        className={styles.radioInput}
-                      />
-                      <div className={styles.radioText}>
-                        <div className={styles.radioDate}>
-                          {parsed.date} {parsed.day && `(${parsed.day})`}
-                        </div>
-                        <div className={styles.radioTime}>{parsed.time}</div>
-                      </div>
-                      {selectedSchedule === schedule && <span className={styles.checkIcon}>✓</span>}
-                    </label>
-                  );
-                })}
-              </div>
+            <div className={styles.radioGroup}>
+              {schedules.map((schedule) => (
+                <label
+                  key={schedule}
+                  className={`${styles.radioLabel} ${selectedSchedule === schedule ? styles.selected : ''}`}
+                >
+                  <input
+                    type="radio"
+                    name="schedule"
+                    value={schedule}
+                    checked={selectedSchedule === schedule}
+                    onChange={(e) => setSelectedSchedule(e.target.value)}
+                    className={styles.radioInput}
+                  />
+                  <span className={styles.radioText}>{formatSchedule(schedule)}</span>
+                  {selectedSchedule === schedule && <span className={styles.checkIcon}>✓</span>}
+                </label>
+              ))}
             </div>
             {errors.schedule && <div className={styles.errorMessage}>{errors.schedule}</div>}
           </div>

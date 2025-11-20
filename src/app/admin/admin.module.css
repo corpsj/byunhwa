@@ -326,6 +326,25 @@
   gap: 0.75rem;
 }
 
+.selectWrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.selectWrapper label {
+  color: var(--color-text-muted);
+  font-size: 0.9rem;
+}
+
+.selectWrapper select {
+  padding: 0.65rem 0.75rem;
+  border: 1px solid #dcdcdc;
+  border-radius: 10px;
+  background: #fff;
+  font-size: 1rem;
+}
+
 .authPage {
   min-height: 100vh;
   display: flex;

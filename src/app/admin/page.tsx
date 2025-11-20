@@ -54,6 +54,11 @@ export default function AdminPage() {
   });
   const [configSaving, setConfigSaving] = useState(false);
 
+  const availableSchedules = useMemo(
+    () => Array.from(new Set([...defaultFormConfig.schedules, ...config.schedules])),
+    [config.schedules]
+  );
+
   const loadConfig = useCallback(async () => {
     try {
       const res = await fetch('/api/config', { cache: 'no-store' });
@@ -107,64 +112,7 @@ export default function AdminPage() {
     void bootstrap();
   }, [bootstrap]);
 
-  const formatSchedule = (value: string) => {
-    const d = new Date(value);
-    if (Number.isNaN(d.getTime())) return value;
-    const pad = (n: number) => n.toString().padStart(2, '0');
-    const dayNames = ['일', '월', '화', '수', '목', '금', '토'];
-    return `${pad(d.getMonth() + 1)}월 ${pad(d.getDate())}일 (${dayNames[d.getDay()]}) ${pad(d.getHours())}시`;
-  };
-
-  const formatScheduleInput = (value: string) => {
-    const d = new Date(value);
-    if (Number.isNaN(d.getTime())) return value;
-    const pad = (n: number) => n.toString().padStart(2, '0');
-    return `${pad(d.getMonth() + 1)}월 ${pad(d.getDate())}일 ${pad(d.getHours())}:${pad(d.getMinutes())}`;
-  };
-
-  const parseInputToIso = (input: string, existing: string) => {
-    const digits = input.match(/\d+/g) || [];
-    const base = new Date(existing || Date.now());
-    let year = base.getFullYear();
-    let month = base.getMonth() + 1;
-    let day = base.getDate();
-    let hour = 0;
-    let minute = 0;
-
-    if (digits.length >= 5) {
-      // yyyy, mm, dd, hh, mm
-      year = Number(digits[0]);
-      month = Number(digits[1]);
-      day = Number(digits[2]);
-      hour = Number(digits[3]);
-      minute = Number(digits[4]);
-    } else if (digits.length === 4) {
-      // mm, dd, hh, mm
-      month = Number(digits[0]);
-      day = Number(digits[1]);
-      hour = Number(digits[2]);
-      minute = Number(digits[3]);
-    } else if (digits.length === 3) {
-      // mm, dd, hh
-      month = Number(digits[0]);
-      day = Number(digits[1]);
-      hour = Number(digits[2]);
-      minute = 0;
-    } else {
-      return existing;
-    }
-
-    const clamp = (val: number, min: number, max: number) => Math.min(Math.max(val, min), max);
-    month = clamp(month, 1, 12);
-    day = clamp(day, 1, 31);
-    hour = clamp(hour, 0, 23);
-    minute = clamp(minute, 0, 59);
-
-    const pad = (n: number) => n.toString().padStart(2, '0');
-    const iso = `${year}-${pad(month)}-${pad(day)}T${pad(hour)}:${pad(minute)}`;
-    const d = new Date(iso);
-    return Number.isNaN(d.getTime()) ? existing : iso;
-  };
+  const formatSchedule = (value: string) => value;
 
   const handleLogin = async () => {
     setFetchError('');
@@ -249,13 +197,18 @@ export default function AdminPage() {
   const handleConfigChange = (index: number, value: string) => {
     setConfig((prev) => {
       const updated = [...prev.schedules];
-      updated[index] = parseInputToIso(value, prev.schedules[index]);
+      updated[index] = value;
       return { ...prev, schedules: updated };
     });
   };
 
   const addScheduleRow = () => {
-    setConfig((prev) => ({ ...prev, schedules: [...prev.schedules, ''] }));
+    setConfig((prev) => {
+      const existing = new Set(prev.schedules);
+      const candidates = Array.from(new Set([...defaultFormConfig.schedules, ...prev.schedules]));
+      const next = candidates.find((opt) => !existing.has(opt)) || defaultFormConfig.schedules[0] || '';
+      return { ...prev, schedules: [...prev.schedules, next] };
+    });
   };
 
   const removeScheduleRow = (index: number) => {
@@ -449,13 +402,19 @@ export default function AdminPage() {
           <div className={styles.configList}>
             {config.schedules.map((schedule, index) => (
               <div key={`${schedule}-${index}`} className={styles.configRow}>
-                <Input
-                  label={`일정 ${index + 1}`}
-                  type="text"
-                  value={formatScheduleInput(schedule)}
-                  onChange={(e) => handleConfigChange(index, e.target.value)}
-                  placeholder="예) 12월 24일 14:00"
-                />
+                <div className={styles.selectWrapper}>
+                  <label>일정 {index + 1}</label>
+                  <select
+                    value={schedule}
+                    onChange={(e) => handleConfigChange(index, e.target.value)}
+                  >
+                    {availableSchedules.map((option) => (
+                      <option key={option} value={option}>
+                        {option}
+                      </option>
+                    ))}
+                  </select>
+                </div>
                 {config.schedules.length > 1 && (
                   <button className={styles.removeButton} onClick={() => removeScheduleRow(index)}>
                     삭제
