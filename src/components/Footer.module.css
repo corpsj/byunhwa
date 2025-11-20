@@ -1,0 +1,41 @@
+.footer {
+    background-color: var(--color-bg-input);
+    /* Light Greige for footer */
+    color: var(--color-text-muted);
+    padding: 4rem 0;
+    margin-top: auto;
+    border-top: none;
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+    text-align: center;
+}
+
+.contact {
+    display: flex;
+    gap: 2rem;
+    font-size: 0.9rem;
+    color: var(--color-text-main);
+    opacity: 0.8;
+}
+
+.contact a {
+    transition: var(--transition-smooth);
+    border-bottom: 1px solid transparent;
+}
+
+.contact a:hover {
+    color: var(--color-accent-main);
+    border-bottom-color: var(--color-accent-main);
+}
+
+@media (max-width: 600px) {
+    .contact {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+}

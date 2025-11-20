@@ -1,0 +1,48 @@
+.wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    margin-bottom: 1.5rem;
+}
+
+.label {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--color-text-main);
+    letter-spacing: 0.02em;
+}
+
+.required {
+    color: var(--color-accent-main);
+    /* Use accent for required star */
+}
+
+.input {
+    padding: 0.9rem 1rem;
+    border: 1px solid transparent;
+    /* No border initially for cleaner look, or subtle */
+    background-color: var(--color-bg-input);
+    border-radius: 8px;
+    font-size: 1rem;
+    font-family: inherit;
+    transition: var(--transition-smooth);
+    color: var(--color-text-main);
+    width: 100%;
+}
+
+.input:focus {
+    outline: none;
+    background-color: #FFFFFF;
+    box-shadow: 0 0 0 2px var(--color-accent-main);
+    /* Focus ring */
+}
+
+.hasError {
+    box-shadow: 0 0 0 2px var(--color-error);
+}
+
+.errorMessage {
+    font-size: 0.85rem;
+    color: var(--color-error);
+    margin-top: 0.25rem;
+}
