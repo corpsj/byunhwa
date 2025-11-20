@@ -3,6 +3,29 @@ import { getSupabaseServer } from '@/lib/supabase';
 import { defaultFormConfig } from '@/lib/formDefaults';
 import { requireAdmin } from '@/lib/adminAuth';
 
+const normalizeSchedules = (value: unknown): string[] => {
+  if (Array.isArray(value)) {
+    return value.map((item) => String(item).trim()).filter(Boolean);
+  }
+
+  if (typeof value === 'string') {
+    try {
+      const parsed = JSON.parse(value);
+      if (Array.isArray(parsed)) {
+        return parsed.map((item) => String(item).trim()).filter(Boolean);
+      }
+    } catch {
+      // not JSON, fall through
+    }
+    return value
+      .split(/[\n,]+/)
+      .map((item) => item.trim())
+      .filter(Boolean);
+  }
+
+  return [];
+};
+
 export async function GET() {
   const supabase = getSupabaseServer();
 
@@ -17,9 +40,9 @@ export async function GET() {
   }
 
   const record = data?.[0];
-  const schedules = Array.isArray(record?.schedules) && record?.schedules.length > 0
-    ? record.schedules.map((item: string) => item.trim()).filter(Boolean)
-    : defaultFormConfig.schedules;
+  const schedulesFromDb = normalizeSchedules(record?.schedules);
+  const schedules =
+    schedulesFromDb.length > 0 ? schedulesFromDb : defaultFormConfig.schedules;
 
   return NextResponse.json({
     schedules,
