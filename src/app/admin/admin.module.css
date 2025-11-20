@@ -1,0 +1,368 @@
+.page {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 1.5rem 1.25rem 3rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.kicker {
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  letter-spacing: 0.08em;
+  font-size: 0.8rem;
+  margin-bottom: 0.2rem;
+}
+
+.title {
+  font-size: 1.8rem;
+  color: var(--color-text-main);
+  margin: 0;
+}
+
+.subtitle {
+  color: var(--color-text-muted);
+  margin: 0.5rem 0 1rem;
+}
+
+.headerActions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.banner {
+  background: #f6f9ff;
+  color: #1a3c8b;
+  padding: 0.75rem 1rem;
+  border-radius: 12px;
+  font-size: 0.95rem;
+}
+
+.summaryGrid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+}
+
+.card {
+  background: #fff;
+  border: 1px solid #eaeaea;
+  border-radius: 14px;
+  padding: 1rem 1.2rem;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.03);
+}
+
+.cardLabel {
+  color: var(--color-text-muted);
+  margin: 0 0 0.4rem;
+  font-size: 0.95rem;
+}
+
+.cardValue {
+  margin: 0;
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--color-text-main);
+}
+
+.scheduleList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.scheduleItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--color-bg-input);
+  padding: 0.6rem 0.75rem;
+  border-radius: 10px;
+  color: var(--color-text-main);
+  font-size: 0.95rem;
+}
+
+.countChip {
+  background: var(--color-accent-main);
+  color: #fff;
+  border-radius: 999px;
+  padding: 0.25rem 0.6rem;
+  font-size: 0.85rem;
+}
+
+.filters {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1rem;
+}
+
+.filterControl {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.filterControl label {
+  color: var(--color-text-muted);
+  font-size: 0.9rem;
+}
+
+.filterControl select {
+  padding: 0.6rem 0.8rem;
+  border-radius: 10px;
+  border: 1px solid #dcdcdc;
+  background: #fff;
+  font-size: 1rem;
+}
+
+.section {
+  background: #fff;
+  border: 1px solid #eaeaea;
+  border-radius: 16px;
+  padding: 1.2rem 1.2rem 1.4rem;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.03);
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.sectionHeader {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+.section h2 {
+  margin: 0;
+  font-size: 1.2rem;
+  color: var(--color-text-main);
+}
+
+.badge {
+  background: var(--color-accent-main);
+  color: #fff;
+  border-radius: 999px;
+  padding: 0.2rem 0.6rem;
+  font-size: 0.9rem;
+}
+
+.muted {
+  color: var(--color-text-muted);
+  margin: 0;
+  font-size: 0.95rem;
+}
+
+.tabs {
+  display: flex;
+  gap: 0.5rem;
+  background: #f5f5f5;
+  padding: 0.35rem;
+  border-radius: 12px;
+}
+
+.tab {
+  flex: 1;
+  padding: 0.65rem;
+  border: none;
+  background: transparent;
+  border-radius: 10px;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  cursor: pointer;
+}
+
+.activeTab {
+  background: #fff;
+  color: var(--color-text-main);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.05);
+}
+
+.orderList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+
+.orderCard {
+  border: 1px solid #ededed;
+  border-radius: 12px;
+  padding: 0.75rem 0.85rem;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.orderRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+.orderName {
+  margin: 0;
+  font-weight: 700;
+  color: var(--color-text-main);
+  font-size: 1rem;
+}
+
+.orderMeta {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: 0.86rem;
+}
+
+.status {
+  padding: 0.15rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.82rem;
+  text-transform: uppercase;
+  font-weight: 700;
+}
+
+.pending {
+  background: #fff6e6;
+  color: #9a6b00;
+}
+
+.confirmed {
+  background: #e8fff2;
+  color: #0b8645;
+}
+
+.cancelled {
+  background: #ffeaea;
+  color: #b71d1d;
+}
+
+.actions {
+  display: flex;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+}
+
+.actions :global(button) {
+  flex: 1;
+  min-width: 90px;
+}
+
+.compactActions {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.4rem;
+  align-items: center;
+}
+
+.compactActions label {
+  color: var(--color-text-muted);
+  font-size: 0.85rem;
+}
+
+.compactActions select {
+  width: 100%;
+  padding: 0.5rem 0.6rem;
+  border-radius: 10px;
+  border: 1px solid #dcdcdc;
+  background: #fff;
+  font-size: 0.95rem;
+}
+
+.configList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.configRow {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.removeButton {
+  background: none;
+  border: 1px solid #e0e0e0;
+  border-radius: 10px;
+  padding: 0.6rem 0.9rem;
+  color: #b71d1d;
+  cursor: pointer;
+}
+
+.textareaGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.textareaGroup label {
+  color: var(--color-text-muted);
+}
+
+.textareaGroup textarea {
+  width: 100%;
+  min-height: 120px;
+  border-radius: 10px;
+  border: 1px solid #dcdcdc;
+  padding: 0.75rem;
+  font-size: 1rem;
+  line-height: 1.4;
+}
+
+.gridTwo {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 0.75rem;
+}
+
+.authPage {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  background: linear-gradient(135deg, #f8fafc, #ffffff);
+}
+
+.authCard {
+  width: min(420px, 100%);
+  background: #fff;
+  border: 1px solid #eaeaea;
+  border-radius: 18px;
+  padding: 1.5rem;
+  box-shadow: 0 10px 36px rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.error {
+  color: #d64545;
+  margin: 0.5rem 0 0;
+}
+
+@media (max-width: 640px) {
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .configRow {
+    grid-template-columns: 1fr;
+  }
+
+  .actions {
+    flex-direction: column;
+  }
+}

@@ -1,5 +1,4 @@
 import Link from 'next/link';
-import Image from 'next/image';
 import styles from './Header.module.css';
 
 export default function Header() {
@@ -8,9 +7,10 @@ export default function Header() {
             <div className={`container ${styles.container}`}>
                 <div className={styles.logoWrapper}>
                     <Link href="/" className={styles.logoLink}>
-                        <span className={styles.logoText}>ByunHwa</span>
+                        <span className={styles.logoText}>변화 x PIRI</span>
                     </Link>
-                </div>    <nav className={styles.nav}>
+                </div>
+                <nav className={styles.nav}>
                     <Link href="/" className={styles.navLink}>주문하기</Link>
                 </nav>
             </div>

@@ -4,11 +4,13 @@ import { useState, useEffect } from 'react';
 import styles from './page.module.css';
 import Button from '@/components/Button';
 import Input from '@/components/Input';
+import { defaultFormConfig } from '@/lib/formDefaults';
 
 export default function Home() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [orderSuccess, setOrderSuccess] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [submissionError, setSubmissionError] = useState('');
 
   // Student Info
   const [name, setName] = useState('');
@@ -16,15 +18,38 @@ export default function Home() {
 
   // Class Schedule
   const [selectedSchedule, setSelectedSchedule] = useState('');
+  const [schedules, setSchedules] = useState<string[]>(defaultFormConfig.schedules);
 
   // Agreement
   const [agreed, setAgreed] = useState(false);
+  const [details, setDetails] = useState(defaultFormConfig.details);
+  const [bankName, setBankName] = useState(defaultFormConfig.bankName);
+  const [accountNumber, setAccountNumber] = useState(defaultFormConfig.accountNumber);
+  const [depositor, setDepositor] = useState(defaultFormConfig.depositor);
+  const [price, setPrice] = useState(defaultFormConfig.price);
 
   // Validation Errors
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
   useEffect(() => {
     setMounted(true);
+    const fetchConfig = async () => {
+      try {
+        const res = await fetch('/api/config', { cache: 'no-store' });
+        if (!res.ok) return;
+        const data = await res.json();
+        setSchedules(Array.isArray(data.schedules) && data.schedules.length > 0 ? data.schedules : defaultFormConfig.schedules);
+        setDetails(data.details || defaultFormConfig.details);
+        setBankName(data.bankName || defaultFormConfig.bankName);
+        setAccountNumber(data.accountNumber || defaultFormConfig.accountNumber);
+        setDepositor(data.depositor || defaultFormConfig.depositor);
+        setPrice(data.price || defaultFormConfig.price);
+      } catch (error) {
+        console.error('Failed to load form config', error);
+      }
+    };
+
+    fetchConfig();
   }, []);
 
   const validateForm = () => {
@@ -42,13 +67,33 @@ export default function Home() {
     if (!validateForm()) return;
 
     setIsSubmitting(true);
+    setSubmissionError('');
 
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1500));
+    try {
+      const res = await fetch('/api/orders', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name,
+          phone,
+          schedule: selectedSchedule,
+          agreed,
+        }),
+      });
 
-    setIsSubmitting(false);
-    setOrderSuccess(true);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data?.error || '신청에 실패했습니다. 다시 시도해주세요.');
+      }
+
+      setOrderSuccess(true);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : '신청에 실패했습니다. 다시 시도해주세요.';
+      setSubmissionError(message);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const resetOrder = () => {
@@ -77,8 +122,9 @@ export default function Home() {
 
           <div className={styles.bankInfo}>
             <div className={styles.bankLabel}>입금 계좌 안내</div>
-            <div className={styles.account}>국민은행 1234-56-789012</div>
-            <div className={styles.depositor}>예금주: 변화(ByunHwa)</div>
+            <div className={styles.account}>{bankName} {accountNumber}</div>
+            <div className={styles.depositor}>예금주: {depositor}</div>
+            <div className={styles.depositor}>금액: {Number(price || 0).toLocaleString('ko-KR')}원</div>
           </div>
 
           <div className={styles.actions}>
@@ -142,11 +188,7 @@ export default function Home() {
           <div className={styles.section}>
             <h3 className={styles.sectionTitle}>02. 수강 희망 일정 (택 1)</h3>
             <div className={styles.radioGroup}>
-              {[
-                '12월 20일 (금) 19:00',
-                '12월 21일 (토) 14:00',
-                '12월 22일 (일) 14:00'
-              ].map((schedule) => (
+              {schedules.map((schedule) => (
                 <label key={schedule} className={`${styles.radioLabel} ${selectedSchedule === schedule ? styles.selected : ''}`}>
                   <input
                     type="radio"
@@ -168,12 +210,11 @@ export default function Home() {
           <div className={styles.section}>
             <h3 className={styles.sectionTitle}>03. 주의사항 동의</h3>
             <div className={styles.agreementBox}>
-              <p className={styles.agreementText}>
-                <strong>[알러지 및 주의사항]</strong><br />
-                - 생화 및 식물 소재를 다루므로 꽃가루 알러지가 있으신 분은 주의가 필요합니다.<br />
-                - 수업 시작 3일 전까지 100% 환불 가능하며, 이후에는 재료 준비로 인해 환불이 불가합니다.<br />
-                - 수업 시작 10분 전까지 도착해주시기 바랍니다.
-              </p>
+              <div className={styles.agreementText}>
+                {details.split('\n').map((line, index) => (
+                  <p key={`${line}-${index}`}>{line}</p>
+                ))}
+              </div>
               <label className={styles.checkboxLabel}>
                 <input
                   type="checkbox"
@@ -198,6 +239,7 @@ export default function Home() {
           >
             {isSubmitting ? '신청 중...' : '클래스 신청하기'}
           </Button>
+          {submissionError && <p className={styles.submitError}>{submissionError}</p>}
           <p className={styles.notice}>
             신청 후 입금 순으로 확정됩니다.
           </p>

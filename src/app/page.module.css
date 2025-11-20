@@ -207,6 +207,13 @@
   color: var(--color-text-muted);
 }
 
+.submitError {
+  margin-top: 0.75rem;
+  color: #d64545;
+  font-size: 0.9rem;
+  text-align: center;
+}
+
 /* Success Page Styles */
 .successContainer {
   display: flex;
