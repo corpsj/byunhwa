@@ -58,12 +58,12 @@ const sendKakaoWebhook = async (payload: Record<string, unknown>) => {
 
 export const notifyNewOrder = async (order: OrderForNotify) => {
   const contactNumber = adminPhone || fallbackContact;
-  const userMessage = `[변화 x Piri Fleur] 신청이 접수되었습니다.
+  const userMessage = `[변화 x Piri Flore] 신청이 접수되었습니다.
 이름: ${order.name}
 일정: ${order.schedule}
 입금 확인 후 확정 문자/카톡을 드립니다. 문의: ${contactNumber}`;
 
-  const adminMessage = `[변화 x Piri Fleur 신청 알림]
+  const adminMessage = `[변화 x Piri Flore 신청 알림]
 이름: ${order.name}
 연락처: ${order.phone}
 일정: ${order.schedule}
