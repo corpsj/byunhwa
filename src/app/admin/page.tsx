@@ -219,7 +219,7 @@ export default function AdminPage() {
 
   const handleSchedulePartChange = (
     index: number,
-    part: 'month' | 'day' | 'hour' | 'minute',
+    part: 'month' | 'day' | 'hour',
     value: string
   ) => {
     setConfig((prev) => {
@@ -230,19 +230,17 @@ export default function AdminPage() {
       let month = match ? Number(match[1]) : 1;
       let day = match ? Number(match[2]) : 1;
       let hour = match ? Number(match[3]) : 0;
-      let minute = match ? Number(match[4]) : 0;
 
       if (part === 'month') month = Number(value);
       if (part === 'day') day = Number(value);
       if (part === 'hour') hour = Number(value);
-      if (part === 'minute') minute = Number(value);
 
       const year = new Date().getFullYear();
-      const date = new Date(`${year}-${pad(month)}-${pad(day)}T${pad(hour)}:${pad(minute)}`);
+      const date = new Date(`${year}-${pad(month)}-${pad(day)}T${pad(hour)}:00`);
       const dayNames = ['일', '월', '화', '수', '목', '금', '토'];
       const dayText = Number.isNaN(date.getTime()) ? '' : ` (${dayNames[date.getDay()]})`;
 
-      updated[index] = `${pad(month)}월 ${pad(day)}일${dayText} ${pad(hour)}:${pad(minute)}`;
+      updated[index] = `${pad(month)}월 ${pad(day)}일${dayText} ${pad(hour)}:00`;
       return { ...prev, schedules: updated };
     });
   };
@@ -477,7 +475,6 @@ export default function AdminPage() {
               const month = match ? Number(match[1]) : 1;
               const day = match ? Number(match[2]) : 1;
               const hour = match ? Number(match[3]) : 0;
-              const minute = match ? Number(match[4]) : 0;
 
               return (
                 <div key={`${schedule}-${index}`} className={styles.configRow}>
@@ -511,16 +508,6 @@ export default function AdminPage() {
                         {Array.from({ length: 24 }, (_, i) => i).map((h) => (
                           <option key={h} value={h}>
                             {pad(h)}시
-                          </option>
-                        ))}
-                      </select>
-                      <select
-                        value={minute}
-                        onChange={(e) => handleSchedulePartChange(index, 'minute', e.target.value)}
-                      >
-                        {['00', '30'].map((m) => (
-                          <option key={m} value={m}>
-                            {m}분
                           </option>
                         ))}
                       </select>
