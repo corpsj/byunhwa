@@ -1,8 +1,5 @@
-export const DEFAULT_SCHEDULES = [
-  '12월 20일 (금) 19:00',
-  '12월 21일 (토) 14:00',
-  '12월 22일 (일) 14:00',
-];
+// YYYY-MM-DD 포맷의 날짜 문자열
+export const DEFAULT_SCHEDULES = ['2024-12-20', '2024-12-21', '2024-12-22'];
 
 export const DEFAULT_DETAILS = `[알러지 및 주의사항]
 - 편백·침엽수 등 수목 소재 알러지가 있는 분은 수업 참여 전 주의가 필요합니다.

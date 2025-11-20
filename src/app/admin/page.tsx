@@ -107,6 +107,17 @@ export default function AdminPage() {
     void bootstrap();
   }, [bootstrap]);
 
+  const formatSchedule = (value: string) => {
+    if (/^\d{4}-\d{2}-\d{2}$/.test(value)) {
+      try {
+        return new Date(value).toLocaleDateString('ko-KR', { dateStyle: 'medium' });
+      } catch {
+        return value;
+      }
+    }
+    return value;
+  };
+
   const handleLogin = async () => {
     setFetchError('');
     setOrdersLoading(true);
@@ -295,17 +306,17 @@ export default function AdminPage() {
                 {summary.statusCounts.confirmed} / {summary.statusCounts.pending} / {summary.statusCounts.cancelled}
               </p>
             </div>
-            <div className={styles.card}>
-              <p className={styles.cardLabel}>일정별 신청</p>
-              <div className={styles.scheduleList}>
-                {Object.entries(summary.scheduleCounts).map(([key, count]) => (
-                  <div key={key} className={styles.scheduleItem}>
-                    <span>{key}</span>
-                    <span className={styles.countChip}>{count}</span>
-                  </div>
-                ))}
-              </div>
+          <div className={styles.card}>
+            <p className={styles.cardLabel}>일정별 신청</p>
+            <div className={styles.scheduleList}>
+              {Object.entries(summary.scheduleCounts).map(([key, count]) => (
+                <div key={key} className={styles.scheduleItem}>
+                  <span>{formatSchedule(key)}</span>
+                  <span className={styles.countChip}>{count}</span>
+                </div>
+              ))}
             </div>
+          </div>
           </section>
 
           <section className={styles.filters}>
@@ -392,9 +403,10 @@ export default function AdminPage() {
               <div key={`${schedule}-${index}`} className={styles.configRow}>
                 <Input
                   label={`일정 ${index + 1}`}
+                  type="date"
                   value={schedule}
                   onChange={(e) => handleConfigChange(index, e.target.value)}
-                  placeholder="예) 12월 24일 (화) 14:00"
+                  placeholder="예) 2024-12-24"
                 />
                 {config.schedules.length > 1 && (
                   <button className={styles.removeButton} onClick={() => removeScheduleRow(index)}>

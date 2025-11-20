@@ -4,22 +4,35 @@ import { defaultFormConfig } from '@/lib/formDefaults';
 import { requireAdmin } from '@/lib/adminAuth';
 
 const normalizeSchedules = (value: unknown): string[] => {
+  const normalizeDate = (val: string) => {
+    const trimmed = val.trim();
+    // Accept yyyy-mm-dd
+    const isIsoDate = /^\d{4}-\d{2}-\d{2}$/.test(trimmed);
+    if (!isIsoDate) return '';
+    const d = new Date(trimmed);
+    return Number.isNaN(d.getTime()) ? '' : trimmed;
+  };
+
   if (Array.isArray(value)) {
-    return value.map((item) => String(item).trim()).filter(Boolean);
+    return value
+      .map((item) => normalizeDate(String(item)))
+      .filter(Boolean);
   }
 
   if (typeof value === 'string') {
     try {
       const parsed = JSON.parse(value);
       if (Array.isArray(parsed)) {
-        return parsed.map((item) => String(item).trim()).filter(Boolean);
+          return parsed
+            .map((item) => normalizeDate(String(item)))
+            .filter(Boolean);
       }
     } catch {
       // not JSON, fall through
     }
     return value
       .split(/[\n,]+/)
-      .map((item) => item.trim())
+      .map((item) => normalizeDate(item))
       .filter(Boolean);
   }
 

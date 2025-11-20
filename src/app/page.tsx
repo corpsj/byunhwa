@@ -52,6 +52,17 @@ export default function Home() {
     fetchConfig();
   }, []);
 
+  const formatSchedule = (value: string) => {
+    if (/^\d{4}-\d{2}-\d{2}$/.test(value)) {
+      try {
+        return new Date(value).toLocaleDateString('ko-KR', { dateStyle: 'long' });
+      } catch {
+        return value;
+      }
+    }
+    return value;
+  };
+
   const validateForm = () => {
     const newErrors: { [key: string]: string } = {};
     if (!name.trim()) newErrors.name = '수강생 성함을 입력해주세요.';
@@ -198,7 +209,7 @@ export default function Home() {
                     onChange={(e) => setSelectedSchedule(e.target.value)}
                     className={styles.radioInput}
                   />
-                  <span className={styles.radioText}>{schedule}</span>
+                  <span className={styles.radioText}>{formatSchedule(schedule)}</span>
                   {selectedSchedule === schedule && <span className={styles.checkIcon}>✓</span>}
                 </label>
               ))}
