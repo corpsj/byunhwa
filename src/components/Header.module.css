@@ -50,11 +50,19 @@
     transform: scale(1.02);
 }
 
-.logoImage {
-    object-fit: contain;
-    height: 28px;
-    /* Smaller, cleaner logo */
-    width: auto;
+.logoLink {
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+}
+
+.logoText {
+    font-family: var(--font-serif);
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--color-text-main);
+    letter-spacing: -0.02em;
+    line-height: 1;
 }
 
 /* Hide nav for now, or make it a bottom tab bar if needed. 

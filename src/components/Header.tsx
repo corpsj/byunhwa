@@ -6,17 +6,11 @@ export default function Header() {
     return (
         <header className={styles.header}>
             <div className={`container ${styles.container}`}>
-                <Link href="/" className={styles.logoWrapper}>
-                    <Image
-                        src="/logo.png"
-                        alt="Byunhwa Logo"
-                        width={120}
-                        height={40}
-                        className={styles.logoImage}
-                        priority
-                    />
-                </Link>
-                <nav className={styles.nav}>
+                <div className={styles.logoWrapper}>
+                    <Link href="/" className={styles.logoLink}>
+                        <span className={styles.logoText}>ByunHwa</span>
+                    </Link>
+                </div>    <nav className={styles.nav}>
                     <Link href="/" className={styles.navLink}>주문하기</Link>
                 </nav>
             </div>
