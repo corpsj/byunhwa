@@ -430,8 +430,11 @@ export default function AdminPage() {
                     <span className={`${styles.status} ${styles[order.status]}`}>{STATUS_LABELS[order.status]}</span>
                   </div>
                   <div className={styles.orderRow}>
-                    <p className={styles.orderMeta}>{formatSchedule(order.schedule)}</p>
-                    <p className={styles.orderMeta}>
+                    <p className={styles.orderSchedule}>
+                      희망: <span>{formatSchedule(order.schedule)}</span>
+                    </p>
+                    <p className={styles.orderCreated}>
+                      신청:{' '}
                       {new Date(order.created_at).toLocaleString('ko-KR', {
                         month: 'short',
                         day: 'numeric',
