@@ -53,11 +53,21 @@ export default function Home() {
   }, []);
 
   const formatSchedule = (value: string) => {
-    const d = new Date(value);
-    if (Number.isNaN(d.getTime())) return value;
-    const pad = (n: number) => n.toString().padStart(2, '0');
-    const dayNames = ['일', '월', '화', '수', '목', '금', '토'];
-    return `${pad(d.getMonth() + 1)}월 ${pad(d.getDate())}일 (${dayNames[d.getDay()]}) ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+    const match = value.match(/(\d{1,2})월\s*(\d{1,2})일.*?(\d{1,2}):(\d{2})/);
+    if (match) {
+      const [, mmStr, ddStr, hhStr, minStr] = match;
+      const mm = Number(mmStr);
+      const dd = Number(ddStr);
+      const hh = Number(hhStr);
+      const minutes = Number(minStr);
+      const pad = (n: number) => n.toString().padStart(2, '0');
+      const year = new Date().getFullYear();
+      const d = new Date(`${year}-${pad(mm)}-${pad(dd)}T${pad(hh)}:${pad(minutes)}`);
+      const dayNames = ['일', '월', '화', '수', '목', '금', '토'];
+      const dayPart = Number.isNaN(d.getTime()) ? '' : ` (${dayNames[d.getDay()]})`;
+      return `${pad(mm)}월 ${pad(dd)}일${dayPart} ${pad(hh)}:${pad(minutes)}`;
+    }
+    return value;
   };
 
   const validateForm = () => {

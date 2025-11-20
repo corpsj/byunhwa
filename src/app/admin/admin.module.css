@@ -345,6 +345,31 @@
   font-size: 1rem;
 }
 
+.selectWrapperWide {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.selectWrapperWide label {
+  color: var(--color-text-muted);
+  font-size: 0.9rem;
+}
+
+.selectRow {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
+  gap: 0.4rem;
+}
+
+.selectRow select {
+  padding: 0.65rem 0.75rem;
+  border: 1px solid #dcdcdc;
+  border-radius: 10px;
+  background: #fff;
+  font-size: 1rem;
+}
+
 .authPage {
   min-height: 100vh;
   display: flex;

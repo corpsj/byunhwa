@@ -54,11 +54,6 @@ export default function AdminPage() {
   });
   const [configSaving, setConfigSaving] = useState(false);
 
-  const availableSchedules = useMemo(
-    () => Array.from(new Set([...defaultFormConfig.schedules, ...config.schedules])),
-    [config.schedules]
-  );
-
   const loadConfig = useCallback(async () => {
     try {
       const res = await fetch('/api/config', { cache: 'no-store' });
@@ -113,11 +108,21 @@ export default function AdminPage() {
   }, [bootstrap]);
 
   const formatSchedule = (value: string) => {
-    const d = new Date(value);
-    if (Number.isNaN(d.getTime())) return value;
-    const pad = (n: number) => n.toString().padStart(2, '0');
-    const dayNames = ['일', '월', '화', '수', '목', '금', '토'];
-    return `${pad(d.getMonth() + 1)}월 ${pad(d.getDate())}일 (${dayNames[d.getDay()]}) ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+    const match = value.match(/(\d{1,2})월\s*(\d{1,2})일.*?(\d{1,2}):(\d{2})/);
+    if (match) {
+      const [, mmStr, ddStr, hhStr, minStr] = match;
+      const mm = Number(mmStr);
+      const dd = Number(ddStr);
+      const hh = Number(hhStr);
+      const minutes = Number(minStr);
+      const pad = (n: number) => n.toString().padStart(2, '0');
+      const year = new Date().getFullYear();
+      const d = new Date(`${year}-${pad(mm)}-${pad(dd)}T${pad(hh)}:${pad(minutes)}`);
+      const dayNames = ['일', '월', '화', '수', '목', '금', '토'];
+      const dayPart = Number.isNaN(d.getTime()) ? '' : ` (${dayNames[d.getDay()]})`;
+      return `${pad(mm)}월 ${pad(dd)}일${dayPart} ${pad(hh)}:${pad(minutes)}`;
+    }
+    return value;
   };
 
   const handleLogin = async () => {
@@ -200,10 +205,32 @@ export default function AdminPage() {
     };
   }, [orders]);
 
-  const handleConfigChange = (index: number, value: string) => {
+  const handleSchedulePartChange = (
+    index: number,
+    part: 'month' | 'day' | 'hour' | 'minute',
+    value: string
+  ) => {
     setConfig((prev) => {
       const updated = [...prev.schedules];
-      updated[index] = value;
+      const current = updated[index] || '';
+      const match = current.match(/(\d{1,2})월\s*(\d{1,2})일.*?(\d{1,2}):(\d{2})/);
+      const pad = (n: number) => n.toString().padStart(2, '0');
+      let month = match ? Number(match[1]) : 1;
+      let day = match ? Number(match[2]) : 1;
+      let hour = match ? Number(match[3]) : 0;
+      let minute = match ? Number(match[4]) : 0;
+
+      if (part === 'month') month = Number(value);
+      if (part === 'day') day = Number(value);
+      if (part === 'hour') hour = Number(value);
+      if (part === 'minute') minute = Number(value);
+
+      const year = new Date().getFullYear();
+      const date = new Date(`${year}-${pad(month)}-${pad(day)}T${pad(hour)}:${pad(minute)}`);
+      const dayNames = ['일', '월', '화', '수', '목', '금', '토'];
+      const dayText = Number.isNaN(date.getTime()) ? '' : ` (${dayNames[date.getDay()]})`;
+
+      updated[index] = `${pad(month)}월 ${pad(day)}일${dayText} ${pad(hour)}:${pad(minute)}`;
       return { ...prev, schedules: updated };
     });
   };
@@ -407,28 +434,69 @@ export default function AdminPage() {
           </div>
 
           <div className={styles.configList}>
-            {config.schedules.map((schedule, index) => (
-              <div key={`${schedule}-${index}`} className={styles.configRow}>
-                <div className={styles.selectWrapper}>
-                  <label>일정 {index + 1}</label>
-                  <select
-                    value={schedule}
-                    onChange={(e) => handleConfigChange(index, e.target.value)}
-                  >
-                    {availableSchedules.map((option) => (
-                      <option key={option} value={option}>
-                        {formatSchedule(option)}
-                      </option>
-                    ))}
-                  </select>
+            {config.schedules.map((schedule, index) => {
+              const match = schedule.match(/(\d{1,2})월\s*(\d{1,2})일.*?(\d{1,2}):(\d{2})/);
+              const pad = (n: number) => n.toString().padStart(2, '0');
+              const month = match ? Number(match[1]) : 1;
+              const day = match ? Number(match[2]) : 1;
+              const hour = match ? Number(match[3]) : 0;
+              const minute = match ? Number(match[4]) : 0;
+
+              return (
+                <div key={`${schedule}-${index}`} className={styles.configRow}>
+                  <div className={styles.selectWrapperWide}>
+                    <label>일정 {index + 1}</label>
+                    <div className={styles.selectRow}>
+                      <select
+                        value={month}
+                        onChange={(e) => handleSchedulePartChange(index, 'month', e.target.value)}
+                      >
+                        {Array.from({ length: 12 }, (_, i) => i + 1).map((m) => (
+                          <option key={m} value={m}>
+                            {m}월
+                          </option>
+                        ))}
+                      </select>
+                      <select
+                        value={day}
+                        onChange={(e) => handleSchedulePartChange(index, 'day', e.target.value)}
+                      >
+                        {Array.from({ length: 31 }, (_, i) => i + 1).map((d) => (
+                          <option key={d} value={d}>
+                            {d}일
+                          </option>
+                        ))}
+                      </select>
+                      <select
+                        value={hour}
+                        onChange={(e) => handleSchedulePartChange(index, 'hour', e.target.value)}
+                      >
+                        {Array.from({ length: 24 }, (_, i) => i).map((h) => (
+                          <option key={h} value={h}>
+                            {pad(h)}시
+                          </option>
+                        ))}
+                      </select>
+                      <select
+                        value={minute}
+                        onChange={(e) => handleSchedulePartChange(index, 'minute', e.target.value)}
+                      >
+                        {['00', '30'].map((m) => (
+                          <option key={m} value={m}>
+                            {m}분
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+                  {config.schedules.length > 1 && (
+                    <button className={styles.removeButton} onClick={() => removeScheduleRow(index)}>
+                      삭제
+                    </button>
+                  )}
                 </div>
-                {config.schedules.length > 1 && (
-                  <button className={styles.removeButton} onClick={() => removeScheduleRow(index)}>
-                    삭제
-                  </button>
-                )}
-              </div>
-            ))}
+              );
+            })}
             <Button variant="outline" size="medium" onClick={addScheduleRow}>
               일정 추가
             </Button>
