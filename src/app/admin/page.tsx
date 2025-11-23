@@ -18,6 +18,7 @@ type Order = {
   created_at: string;
   people_count: number;
   total_amount: number;
+  product_type: string;
 };
 
 type ScheduleConfig = {

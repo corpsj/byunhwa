@@ -1,7 +1,8 @@
 -- Add columns to orders table
-ALTER TABLE orders 
+ALTER TABLE orders
 ADD COLUMN IF NOT EXISTS people_count INTEGER DEFAULT 1,
-ADD COLUMN IF NOT EXISTS total_amount INTEGER;
+ADD COLUMN IF NOT EXISTS total_amount INTEGER,
+ADD COLUMN IF NOT EXISTS product_type TEXT DEFAULT 'tree';
 
 -- Add columns to form_config table
 ALTER TABLE form_config 

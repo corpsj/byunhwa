@@ -3,11 +3,15 @@ import { getSupabaseServer } from '@/lib/supabase';
 import { notifyNewOrder } from '@/lib/notifications';
 
 export async function POST(req: NextRequest) {
-  const { name, phone, schedule, agreed, peopleCount, totalAmount } = await req.json();
+  const { name, phone, schedule, agreed, peopleCount, totalAmount, productType } = await req.json();
 
   if (!name || !phone || !schedule || agreed !== true) {
     return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
   }
+
+  // Validate productType
+  const validProductTypes = ['tree', 'wreath'];
+  const normalizedProductType = productType && validProductTypes.includes(productType) ? productType : 'tree';
 
   const supabase = getSupabaseServer();
 
@@ -61,6 +65,7 @@ export async function POST(req: NextRequest) {
     agreed: Boolean(agreed),
     people_count: requested,
     total_amount: Number(totalAmount) || 0,
+    product_type: normalizedProductType,
     status: 'pending',
   };
 
