@@ -561,6 +561,10 @@
   border-radius: 12px;
   cursor: pointer;
   transition: all 0.2s;
+  color: var(--color-text-main);
+  text-decoration: none;
+  -webkit-appearance: none;
+  appearance: none;
 }
 
 .timeChip:hover:not(:disabled) {
@@ -592,4 +596,24 @@
 
 .timeChip.selectedTime .seatText {
   color: rgba(255, 255, 255, 0.9);
+}
+
+/* Small Screen Optimizations */
+@media (max-width: 375px) {
+  .radioLabelBox {
+    padding: 0.8rem 0.5rem;
+    font-size: 0.85rem;
+  }
+
+  .account {
+    font-size: 0.9rem;
+  }
+
+  .bankLabel {
+    font-size: 0.8rem;
+  }
+
+  .section {
+    padding: 1.2rem;
+  }
 }

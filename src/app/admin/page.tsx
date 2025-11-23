@@ -246,9 +246,11 @@ export default function AdminPage() {
   const summary = useMemo(() => {
     const statusCounts: Record<string, number> = { pending: 0, confirmed: 0, cancelled: 0 };
     const scheduleCounts: Record<string, { count: number; people: number }> = {};
+    let totalPeople = 0;
 
     orders.forEach((order) => {
       statusCounts[order.status] = (statusCounts[order.status] || 0) + 1;
+      totalPeople += (order.people_count || 1);
       const key = order.schedule || '미지정';
       if (!scheduleCounts[key]) scheduleCounts[key] = { count: 0, people: 0 };
 
@@ -259,7 +261,8 @@ export default function AdminPage() {
     });
 
     return {
-      total: orders.length,
+      total: totalPeople,
+      totalOrders: orders.length,
       statusCounts,
       scheduleCounts,
     };
@@ -414,7 +417,7 @@ export default function AdminPage() {
           <section className={styles.summaryGrid}>
             <div className={styles.card}>
               <p className={styles.cardLabel}>총 신청자</p>
-              <p className={styles.cardValue}>{summary.total}명</p>
+              <p className={styles.cardValue}>{summary.total}명 ({summary.totalOrders}건)</p>
             </div>
             <div className={styles.card}>
               <p className={styles.cardLabel}>확정 / 대기 / 취소</p>

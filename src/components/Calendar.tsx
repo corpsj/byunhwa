@@ -23,7 +23,8 @@ type CalendarProps = {
 };
 
 export default function Calendar({ schedules, selectedDate, onDateSelect }: CalendarProps) {
-    const [currentMonth, setCurrentMonth] = useState(new Date());
+    // Fixed to December of current year (or 2024 if preferred, but dynamic is better)
+    const [currentMonth] = useState(new Date(new Date().getFullYear(), 11, 1)); // Month is 0-indexed, 11 is Dec
 
     // Extract dates that have schedules
     const scheduledDates = schedules.map((s) => {
@@ -49,17 +50,15 @@ export default function Calendar({ schedules, selectedDate, onDateSelect }: Cale
         end: endDate,
     });
 
-    const nextMonth = () => setCurrentMonth(addMonths(currentMonth, 1));
-    const prevMonth = () => setCurrentMonth(subMonths(currentMonth, 1));
+
 
     return (
         <div className={styles.calendar}>
             <div className={styles.header}>
-                <button onClick={prevMonth} className={styles.navButton}>&lt;</button>
+                {/* Navigation hidden as requested */}
                 <span className={styles.monthTitle}>
                     {format(currentMonth, 'yyyy년 M월', { locale: ko })}
                 </span>
-                <button onClick={nextMonth} className={styles.navButton}>&gt;</button>
             </div>
 
             <div className={styles.daysRow}>
