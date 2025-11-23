@@ -23,4 +23,6 @@ export const defaultFormConfig = {
   accountNumber: DEFAULT_ACCOUNT.accountNumber,
   depositor: DEFAULT_ACCOUNT.depositor,
   price: DEFAULT_ACCOUNT.price,
+  price2: '150000',
+  backgroundImage: '',
 };

@@ -16,15 +16,24 @@ type Order = {
   agreed: boolean;
   status: OrderStatus;
   created_at: string;
+  people_count: number;
+  total_amount: number;
+};
+
+type ScheduleConfig = {
+  time: string;
+  capacity: number;
 };
 
 type FormConfig = {
-  schedules: string[];
+  schedules: ScheduleConfig[];
   details: string;
   bankName: string;
   accountNumber: string;
   depositor: string;
   price: string;
+  price2: string;
+  backgroundImage: string;
 };
 
 const STATUS_LABELS: Record<OrderStatus, string> = {
@@ -47,12 +56,14 @@ export default function AdminPage() {
   const [activeTab, setActiveTab] = useState<'orders' | 'settings'>('orders');
 
   const [config, setConfig] = useState<FormConfig>({
-    schedules: defaultFormConfig.schedules,
+    schedules: [],
     details: defaultFormConfig.details,
     bankName: defaultFormConfig.bankName,
     accountNumber: defaultFormConfig.accountNumber,
     depositor: defaultFormConfig.depositor,
     price: defaultFormConfig.price,
+    price2: defaultFormConfig.price2 || '150000',
+    backgroundImage: defaultFormConfig.backgroundImage || '',
   });
   const [configSaving, setConfigSaving] = useState(false);
 
@@ -61,16 +72,27 @@ export default function AdminPage() {
       const res = await fetch('/api/config', { cache: 'no-store' });
       if (!res.ok) return;
       const data = await res.json();
+
+      // Normalize schedules to object array
+      let normalizedSchedules: ScheduleConfig[] = [];
+      if (Array.isArray(data.schedules)) {
+        normalizedSchedules = data.schedules.map((s: any) => {
+          if (typeof s === 'string') return { time: s, capacity: 100 };
+          return { time: s.time, capacity: s.capacity || 100 };
+        });
+      } else {
+        normalizedSchedules = defaultFormConfig.schedules.map(s => ({ time: s, capacity: 100 }));
+      }
+
       setConfig({
-        schedules:
-          Array.isArray(data.schedules) && data.schedules.length > 0
-            ? data.schedules
-            : defaultFormConfig.schedules,
+        schedules: normalizedSchedules,
         details: data.details || defaultFormConfig.details,
         bankName: data.bankName || defaultFormConfig.bankName,
         accountNumber: data.accountNumber || defaultFormConfig.accountNumber,
         depositor: data.depositor || defaultFormConfig.depositor,
         price: data.price || defaultFormConfig.price,
+        price2: data.price2 || defaultFormConfig.price2 || '150000',
+        backgroundImage: data.backgroundImage || '',
       });
     } catch (error) {
       console.error('Failed to load config', error);
@@ -222,12 +244,17 @@ export default function AdminPage() {
 
   const summary = useMemo(() => {
     const statusCounts: Record<string, number> = { pending: 0, confirmed: 0, cancelled: 0 };
-    const scheduleCounts: Record<string, number> = {};
+    const scheduleCounts: Record<string, { count: number; people: number }> = {};
 
     orders.forEach((order) => {
       statusCounts[order.status] = (statusCounts[order.status] || 0) + 1;
       const key = order.schedule || '미지정';
-      scheduleCounts[key] = (scheduleCounts[key] || 0) + 1;
+      if (!scheduleCounts[key]) scheduleCounts[key] = { count: 0, people: 0 };
+
+      if (order.status !== 'cancelled') {
+        scheduleCounts[key].count += 1;
+        scheduleCounts[key].people += (order.people_count || 1);
+      }
     });
 
     return {
@@ -239,13 +266,19 @@ export default function AdminPage() {
 
   const handleSchedulePartChange = (
     index: number,
-    part: 'month' | 'day' | 'hour',
+    part: 'month' | 'day' | 'hour' | 'capacity',
     value: string
   ) => {
     setConfig((prev) => {
       const updated = [...prev.schedules];
-      const current = updated[index] || '';
-      const match = current.match(/(\d{1,2})월\s*(\d{1,2})일.*?(\d{1,2}):(\d{2})/);
+      const current = updated[index] || { time: '', capacity: 100 };
+
+      if (part === 'capacity') {
+        updated[index] = { ...current, capacity: Number(value) || 0 };
+        return { ...prev, schedules: updated };
+      }
+
+      const match = current.time.match(/(\d{1,2})월\s*(\d{1,2})일.*?(\d{1,2}):(\d{2})/);
       const pad = (n: number) => n.toString().padStart(2, '0');
       let month = match ? Number(match[1]) : 1;
       let day = match ? Number(match[2]) : 1;
@@ -260,17 +293,20 @@ export default function AdminPage() {
       const dayNames = ['일', '월', '화', '수', '목', '금', '토'];
       const dayText = Number.isNaN(date.getTime()) ? '' : ` (${dayNames[date.getDay()]})`;
 
-      updated[index] = `${pad(month)}월 ${pad(day)}일${dayText} ${pad(hour)}:00`;
+      updated[index] = {
+        ...current,
+        time: `${pad(month)}월 ${pad(day)}일${dayText} ${pad(hour)}:00`
+      };
       return { ...prev, schedules: updated };
     });
   };
 
   const addScheduleRow = () => {
     setConfig((prev) => {
-      const existing = new Set(prev.schedules);
-      const candidates = Array.from(new Set([...defaultFormConfig.schedules, ...prev.schedules]));
-      const next = candidates.find((opt) => !existing.has(opt)) || defaultFormConfig.schedules[0] || '';
-      return { ...prev, schedules: [...prev.schedules, next] };
+      return {
+        ...prev,
+        schedules: [...prev.schedules, { time: '12월 25일 (수) 14:00', capacity: 6 }]
+      };
     });
   };
 
@@ -385,17 +421,26 @@ export default function AdminPage() {
                 {summary.statusCounts.confirmed} / {summary.statusCounts.pending} / {summary.statusCounts.cancelled}
               </p>
             </div>
-          <div className={styles.card}>
-            <p className={styles.cardLabel}>일정별 신청</p>
-            <div className={styles.scheduleList}>
-              {Object.entries(summary.scheduleCounts).map(([key, count]) => (
-                <div key={key} className={styles.scheduleItem}>
-                  <span>{formatSchedule(key)}</span>
-                  <span className={styles.countChip}>{count}</span>
-                </div>
-              ))}
+            <div className={styles.card}>
+              <p className={styles.cardLabel}>일정별 신청 (예약인원/건수)</p>
+              <div className={styles.scheduleList}>
+                {Object.entries(summary.scheduleCounts).map(([key, data]) => {
+                  // Find capacity for this schedule
+                  const schedConfig = config.schedules.find(s => s.time === key);
+                  const capacity = schedConfig ? schedConfig.capacity : 100;
+                  const isFull = data.people >= capacity;
+
+                  return (
+                    <div key={key} className={styles.scheduleItem}>
+                      <span>{formatSchedule(key)}</span>
+                      <span className={`${styles.countChip} ${isFull ? styles.fullChip : ''}`}>
+                        {data.people}/{capacity}명 ({data.count}건)
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
             </div>
-          </div>
           </section>
 
           <section className={styles.filters}>
@@ -432,8 +477,8 @@ export default function AdminPage() {
               <select value={scheduleFilter} onChange={(e) => setScheduleFilter(e.target.value)}>
                 <option value="">전체</option>
                 {config.schedules.map((schedule) => (
-                  <option key={schedule} value={schedule}>
-                    {formatSchedule(schedule)}
+                  <option key={schedule.time} value={schedule.time}>
+                    {formatSchedule(schedule.time)}
                   </option>
                 ))}
               </select>
@@ -453,7 +498,10 @@ export default function AdminPage() {
                 <div key={order.id} className={styles.orderCard}>
                   <div className={styles.orderRow}>
                     <div>
-                      <p className={styles.orderName}>{order.name}</p>
+                      <p className={styles.orderName}>
+                        {order.name}
+                        <span className={styles.peopleCount}>({order.people_count || 1}인)</span>
+                      </p>
                       <p className={styles.orderMeta}>{order.phone}</p>
                     </div>
                     <span className={`${styles.status} ${styles[order.status]}`}>{STATUS_LABELS[order.status]}</span>
@@ -469,6 +517,11 @@ export default function AdminPage() {
                       })}
                     </p>
                   </div>
+                  {order.total_amount > 0 && (
+                    <div className={styles.orderRow}>
+                      <p className={styles.orderAmount}>결제금액: {order.total_amount.toLocaleString()}원</p>
+                    </div>
+                  )}
                   <div className={styles.statusRow}>
                     <div className={styles.statusChips} role="group" aria-label="상태 변경">
                       {(['confirmed', 'pending', 'cancelled'] as OrderStatus[]).map((status) => (
@@ -508,14 +561,14 @@ export default function AdminPage() {
 
           <div className={styles.configList}>
             {config.schedules.map((schedule, index) => {
-              const match = schedule.match(/(\d{1,2})월\s*(\d{1,2})일.*?(\d{1,2}):(\d{2})/);
+              const match = schedule.time.match(/(\d{1,2})월\s*(\d{1,2})일.*?(\d{1,2}):(\d{2})/);
               const pad = (n: number) => n.toString().padStart(2, '0');
               const month = match ? Number(match[1]) : 1;
               const day = match ? Number(match[2]) : 1;
               const hour = match ? Number(match[3]) : 0;
 
               return (
-                <div key={`${schedule}-${index}`} className={styles.configRow}>
+                <div key={`${index}`} className={styles.configRow}>
                   <div className={styles.selectWrapperWide}>
                     <label>일정 {index + 1}</label>
                     <div className={styles.selectRow}>
@@ -549,6 +602,15 @@ export default function AdminPage() {
                           </option>
                         ))}
                       </select>
+                      <div className={styles.capacityInput}>
+                        <span>정원:</span>
+                        <input
+                          type="number"
+                          value={schedule.capacity}
+                          onChange={(e) => handleSchedulePartChange(index, 'capacity', e.target.value)}
+                          className={styles.smallInput}
+                        />
+                      </div>
                     </div>
                   </div>
                   {config.schedules.length > 1 && (
@@ -593,11 +655,27 @@ export default function AdminPage() {
             onChange={(e) => setConfig((prev) => ({ ...prev, accountNumber: e.target.value }))}
             placeholder="예) 1234-56-789012"
           />
+
+          <div className={styles.gridTwo}>
+            <Input
+              label="1인 가격"
+              value={config.price}
+              onChange={(e) => setConfig((prev) => ({ ...prev, price: e.target.value.replace(/[^0-9]/g, '') }))}
+              placeholder="예) 80000"
+            />
+            <Input
+              label="2인 가격 (할인가)"
+              value={config.price2}
+              onChange={(e) => setConfig((prev) => ({ ...prev, price2: e.target.value.replace(/[^0-9]/g, '') }))}
+              placeholder="예) 150000"
+            />
+          </div>
+
           <Input
-            label="가격"
-            value={config.price}
-            onChange={(e) => setConfig((prev) => ({ ...prev, price: e.target.value.replace(/[^0-9]/g, '') }))}
-            placeholder="예) 80000"
+            label="배경 이미지 URL"
+            value={config.backgroundImage}
+            onChange={(e) => setConfig((prev) => ({ ...prev, backgroundImage: e.target.value }))}
+            placeholder="https://example.com/image.jpg"
           />
 
           <Button onClick={handleConfigSave} disabled={configSaving}>

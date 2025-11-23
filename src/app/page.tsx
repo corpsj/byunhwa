@@ -6,6 +6,13 @@ import Button from '@/components/Button';
 import Input from '@/components/Input';
 import { defaultFormConfig } from '@/lib/formDefaults';
 
+type ScheduleOption = {
+  time: string;
+  capacity: number;
+  reserved: number;
+  remaining: number;
+};
+
 export default function Home() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [orderSuccess, setOrderSuccess] = useState(false);
@@ -15,10 +22,11 @@ export default function Home() {
   // Student Info
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
+  const [peopleCount, setPeopleCount] = useState(1);
 
   // Class Schedule
   const [selectedSchedule, setSelectedSchedule] = useState('');
-  const [schedules, setSchedules] = useState<string[]>(defaultFormConfig.schedules);
+  const [schedules, setSchedules] = useState<ScheduleOption[]>([]);
 
   // Agreement
   const [agreed, setAgreed] = useState(false);
@@ -27,6 +35,8 @@ export default function Home() {
   const [accountNumber, setAccountNumber] = useState(defaultFormConfig.accountNumber);
   const [depositor, setDepositor] = useState(defaultFormConfig.depositor);
   const [price, setPrice] = useState(defaultFormConfig.price);
+  const [price2, setPrice2] = useState(defaultFormConfig.price2 || '150000');
+  const [backgroundImage, setBackgroundImage] = useState('');
 
   // Validation Errors
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
@@ -38,12 +48,35 @@ export default function Home() {
         const res = await fetch('/api/config', { cache: 'no-store' });
         if (!res.ok) return;
         const data = await res.json();
-        setSchedules(Array.isArray(data.schedules) && data.schedules.length > 0 ? data.schedules : defaultFormConfig.schedules);
+
+        // Handle schedules: could be string[] (legacy) or object[] (new)
+        let loadedSchedules: ScheduleOption[] = [];
+        if (Array.isArray(data.schedules)) {
+          loadedSchedules = data.schedules.map((s: any) => {
+            if (typeof s === 'string') {
+              return { time: s, capacity: 100, reserved: 0, remaining: 100 };
+            }
+            return {
+              time: s.time,
+              capacity: s.capacity || 100,
+              reserved: s.reserved || 0,
+              remaining: typeof s.remaining === 'number' ? s.remaining : 100
+            };
+          });
+        } else {
+          loadedSchedules = defaultFormConfig.schedules.map(s => ({
+            time: s, capacity: 100, reserved: 0, remaining: 100
+          }));
+        }
+
+        setSchedules(loadedSchedules);
         setDetails(data.details || defaultFormConfig.details);
         setBankName(data.bankName || defaultFormConfig.bankName);
         setAccountNumber(data.accountNumber || defaultFormConfig.accountNumber);
         setDepositor(data.depositor || defaultFormConfig.depositor);
         setPrice(data.price || defaultFormConfig.price);
+        setPrice2(data.price2 || defaultFormConfig.price2 || '150000');
+        setBackgroundImage(data.backgroundImage || '');
       } catch (error) {
         console.error('Failed to load form config', error);
       }
@@ -81,6 +114,8 @@ export default function Home() {
     return Object.keys(newErrors).length === 0;
   };
 
+  const currentPrice = peopleCount === 2 ? Number(price2) : Number(price);
+
   const handleSubmit = async () => {
     if (!validateForm()) return;
 
@@ -96,6 +131,8 @@ export default function Home() {
           phone,
           schedule: selectedSchedule,
           agreed,
+          peopleCount,
+          totalAmount: currentPrice,
         }),
       });
 
@@ -142,7 +179,7 @@ export default function Home() {
             <div className={styles.bankLabel}>입금 계좌 안내</div>
             <div className={styles.account}>{bankName} {accountNumber}</div>
             <div className={styles.depositor}>예금주: {depositor}</div>
-            <div className={styles.depositor}>금액: {Number(price || 0).toLocaleString('ko-KR')}원</div>
+            <div className={styles.depositor}>금액: {currentPrice.toLocaleString('ko-KR')}원</div>
           </div>
 
           <div className={styles.actions}>
@@ -158,6 +195,14 @@ export default function Home() {
   // Main Form State
   return (
     <main className={styles.main}>
+      {/* Background Image */}
+      {backgroundImage && (
+        <div
+          className={styles.backgroundImage}
+          style={{ backgroundImage: `url(${backgroundImage})` }}
+        />
+      )}
+
       {/* Hero Section */}
       <section className={styles.hero}>
         <h1 className={styles.title}>
@@ -168,8 +213,6 @@ export default function Home() {
           나만의 크리스마스 트리를 만드는<br />
           특별한 원데이 클래스에 초대합니다.
         </p>
-
-
       </section>
 
       {/* Application Form */}
@@ -200,29 +243,66 @@ export default function Home() {
               required
               error={errors.phone}
             />
+
+            <div className={styles.peopleSelect}>
+              <label className={styles.inputLabel}>신청 인원</label>
+              <div className={styles.radioGroupRow}>
+                <label className={`${styles.radioLabelBox} ${peopleCount === 1 ? styles.selectedBox : ''}`}>
+                  <input
+                    type="radio"
+                    name="peopleCount"
+                    value={1}
+                    checked={peopleCount === 1}
+                    onChange={() => setPeopleCount(1)}
+                    className={styles.hiddenRadio}
+                  />
+                  <span>1인 ({Number(price).toLocaleString()}원)</span>
+                </label>
+                <label className={`${styles.radioLabelBox} ${peopleCount === 2 ? styles.selectedBox : ''}`}>
+                  <input
+                    type="radio"
+                    name="peopleCount"
+                    value={2}
+                    checked={peopleCount === 2}
+                    onChange={() => setPeopleCount(2)}
+                    className={styles.hiddenRadio}
+                  />
+                  <span>2인 ({Number(price2).toLocaleString()}원) <span className={styles.discountBadge}>할인</span></span>
+                </label>
+              </div>
+            </div>
           </div>
 
           {/* Class Schedule */}
           <div className={styles.section}>
             <h3 className={styles.sectionTitle}>02. 수강 희망 일정 (택 1)</h3>
             <div className={styles.radioGroup}>
-              {schedules.map((schedule) => (
-                <label
-                  key={schedule}
-                  className={`${styles.radioLabel} ${selectedSchedule === schedule ? styles.selected : ''}`}
-                >
-                  <input
-                    type="radio"
-                    name="schedule"
-                    value={schedule}
-                    checked={selectedSchedule === schedule}
-                    onChange={(e) => setSelectedSchedule(e.target.value)}
-                    className={styles.radioInput}
-                  />
-                  <span className={styles.radioText}>{formatSchedule(schedule)}</span>
-                  {selectedSchedule === schedule && <span className={styles.checkIcon}>✓</span>}
-                </label>
-              ))}
+              {schedules.map((schedule) => {
+                const isSoldOut = schedule.remaining < peopleCount;
+                return (
+                  <label
+                    key={schedule.time}
+                    className={`${styles.radioLabel} ${selectedSchedule === schedule.time ? styles.selected : ''} ${isSoldOut ? styles.disabled : ''}`}
+                  >
+                    <input
+                      type="radio"
+                      name="schedule"
+                      value={schedule.time}
+                      checked={selectedSchedule === schedule.time}
+                      onChange={(e) => setSelectedSchedule(e.target.value)}
+                      className={styles.radioInput}
+                      disabled={isSoldOut}
+                    />
+                    <div className={styles.scheduleInfo}>
+                      <span className={styles.radioText}>{formatSchedule(schedule.time)}</span>
+                      <span className={styles.remainingSeats}>
+                        {isSoldOut ? '마감' : `잔여 ${schedule.remaining}석`}
+                      </span>
+                    </div>
+                    {selectedSchedule === schedule.time && <span className={styles.checkIcon}>✓</span>}
+                  </label>
+                );
+              })}
             </div>
             {errors.schedule && <div className={styles.errorMessage}>{errors.schedule}</div>}
           </div>
@@ -258,7 +338,7 @@ export default function Home() {
             fullWidth
             size="large"
           >
-            {isSubmitting ? '신청 중...' : '클래스 신청하기'}
+            {isSubmitting ? '신청 중...' : `${currentPrice.toLocaleString()}원 결제하기`}
           </Button>
           {submissionError && <p className={styles.submitError}>{submissionError}</p>}
           <p className={styles.notice}>
