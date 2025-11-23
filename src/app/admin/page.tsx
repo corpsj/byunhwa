@@ -55,6 +55,7 @@ export default function AdminPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusUpdatingId, setStatusUpdatingId] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<'orders' | 'settings'>('orders');
+  const [selectedScheduleDetail, setSelectedScheduleDetail] = useState<string | null>(null);
 
   const [config, setConfig] = useState<FormConfig>({
     schedules: [],
@@ -435,7 +436,11 @@ export default function AdminPage() {
                   const isFull = data.people >= capacity;
 
                   return (
-                    <div key={key} className={styles.scheduleItem}>
+                    <div
+                      key={key}
+                      className={styles.scheduleItem}
+                      onClick={() => setSelectedScheduleDetail(key)}
+                    >
                       <span>{formatSchedule(key)}</span>
                       <span className={`${styles.countChip} ${isFull ? styles.fullChip : ''}`}>
                         {data.people}/{capacity}명 ({data.count}건)
@@ -556,6 +561,49 @@ export default function AdminPage() {
               ))}
             </div>
           </section>
+
+          {/* Schedule Detail Modal */}
+          {selectedScheduleDetail && (
+            <div className={styles.modalOverlay} onClick={() => setSelectedScheduleDetail(null)}>
+              <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
+                <div className={styles.modalHeader}>
+                  <h3 className={styles.modalTitle}>{formatSchedule(selectedScheduleDetail)} 신청자 목록</h3>
+                  <button className={styles.closeButton} onClick={() => setSelectedScheduleDetail(null)}>
+                    &times;
+                  </button>
+                </div>
+                <table className={styles.modalTable}>
+                  <thead>
+                    <tr>
+                      <th>이름</th>
+                      <th>연락처</th>
+                      <th>인원</th>
+                      <th>제품</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {orders
+                      .filter((o) => o.schedule === selectedScheduleDetail && o.status !== 'cancelled')
+                      .map((order) => (
+                        <tr key={order.id}>
+                          <td>{order.name}</td>
+                          <td>{order.phone}</td>
+                          <td>{order.people_count || 1}인</td>
+                          <td>{order.product_type === 'wreath' ? '리스' : '트리'}</td>
+                        </tr>
+                      ))}
+                    {orders.filter((o) => o.schedule === selectedScheduleDetail && o.status !== 'cancelled').length === 0 && (
+                      <tr>
+                        <td colSpan={4} style={{ textAlign: 'center', color: '#999' }}>
+                          신청자가 없습니다.
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
         </>
       )}
 

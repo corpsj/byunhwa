@@ -606,7 +606,7 @@
   }
 
   .account {
-    font-size: 0.9rem;
+    font-size: 0.8rem;
   }
 
   .bankLabel {
@@ -614,6 +614,19 @@
   }
 
   .section {
+    padding: 1.2rem;
+  }
+
+  .copyButton {
+    padding: 0.15rem 0.4rem;
+    font-size: 0.75rem;
+  }
+
+  .accountRow {
+    gap: 0.3rem;
+  }
+
+  .bankInfo {
     padding: 1.2rem;
   }
 }
