@@ -518,11 +518,14 @@ export default function AdminPage() {
                       })}
                     </p>
                   </div>
-                  {order.total_amount > 0 && (
-                    <div className={styles.orderRow}>
+                  <div className={styles.orderRow}>
+                    {order.total_amount > 0 && (
                       <p className={styles.orderAmount}>결제금액: {order.total_amount.toLocaleString()}원</p>
-                    </div>
-                  )}
+                    )}
+                    <p className={styles.orderMeta}>
+                      제품: {order.product_type === 'wreath' ? '리스' : '트리'}
+                    </p>
+                  </div>
                   <div className={styles.statusRow}>
                     <div className={styles.statusChips} role="group" aria-label="상태 변경">
                       {(['confirmed', 'pending', 'cancelled'] as OrderStatus[]).map((status) => (

@@ -35,21 +35,12 @@ export async function POST(req: NextRequest) {
     }
   }
 
-  // 2. Get current reserved count
-  const { count, error: countError } = await supabase
-    .from('orders')
-    .select('*', { count: 'exact', head: true })
-    .eq('schedule', schedule)
-    .neq('status', 'cancelled');
-
-  // Note: This is a simple check and might have race conditions under high load.
-  // For a small scale, this is acceptable. For strict consistency, use database constraints or transactions.
-  // We also need to sum people_count, not just count rows.
+  // 2. Get current reserved count (only confirmed orders)
   const { data: existingOrders } = await supabase
     .from('orders')
     .select('people_count')
     .eq('schedule', schedule)
-    .neq('status', 'cancelled');
+    .eq('status', 'confirmed');
 
   const currentReserved = existingOrders?.reduce((sum, o) => sum + (o.people_count || 1), 0) || 0;
   const requested = Number(peopleCount) || 1;

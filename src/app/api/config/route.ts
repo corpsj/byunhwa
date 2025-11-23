@@ -73,7 +73,7 @@ export async function GET() {
   const schedules = schedulesConfig.length > 0 ? schedulesConfig : normalizeSchedules(defaultFormConfig.schedules);
 
   // Calculate remaining seats
-  // 1. Get all confirmed/pending orders
+  // 1. Get all confirmed orders only
   const { data: orders, error: ordersError } = await supabase
     .from('orders')
     .select('schedule, people_count, status');
@@ -84,7 +84,8 @@ export async function GET() {
 
   const reservedCounts: Record<string, number> = {};
   (orders || []).forEach((order) => {
-    if (order.status === 'cancelled') return;
+    // Only count confirmed orders for remaining seats
+    if (order.status !== 'confirmed') return;
     const count = order.people_count || 1;
     reservedCounts[order.schedule] = (reservedCounts[order.schedule] || 0) + count;
   });
