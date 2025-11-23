@@ -28,6 +28,18 @@ const normalizeSchedules = (value: unknown): { time: string; capacity: number }[
 
   return items.map((item) => {
     if (typeof item === 'string') {
+      // Try to parse JSON string
+      try {
+        const parsed = JSON.parse(item);
+        if (typeof parsed === 'object' && parsed !== null) {
+          return {
+            time: normalizeTime(String(parsed.time || '')),
+            capacity: Number(parsed.capacity) || defaultCapacity,
+          };
+        }
+      } catch {
+        // Not JSON, treat as plain string
+      }
       return { time: normalizeTime(item), capacity: defaultCapacity };
     }
     if (typeof item === 'object' && item !== null) {
