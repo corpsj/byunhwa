@@ -7,7 +7,8 @@
 /* Mobile App Layout */
 .hero {
   text-align: center;
-  padding: 4rem 1.5rem 3rem;
+  padding: 1.5rem 1.5rem 1rem;
+  /* Further Reduced padding */
   background-color: var(--color-bg-main);
   width: 100%;
   animation: fadeIn 0.6s ease-out;
@@ -279,12 +280,38 @@
 }
 
 .account {
-  font-size: 1.25rem;
+  font-size: 1rem;
+  /* Reduced from 1.25rem */
   font-weight: 600;
   color: var(--color-text-main);
-  margin-bottom: 0.3rem;
   font-family: var(--font-sans);
   letter-spacing: -0.02em;
+  margin-bottom: 0;
+}
+
+.accountRow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* Center align */
+  gap: 0.5rem;
+  margin-bottom: 0.3rem;
+}
+
+.copyButton {
+  background-color: #f0f0f0;
+  border: 1px solid #dcdcdc;
+  border-radius: 6px;
+  padding: 0.2rem 0.5rem;
+  font-size: 0.8rem;
+  cursor: pointer;
+  color: var(--color-text-muted);
+  transition: all 0.2s;
+}
+
+.copyButton:hover {
+  background-color: #e0e0e0;
+  color: var(--color-text-main);
 }
 
 .depositor {
@@ -459,8 +486,41 @@
 /* Schedule Item Updates */
 .scheduleInfo {
   display: flex;
-  flex-direction: column;
-  gap: 0.2rem;
+  justify-content: space-between;
+  align-items: center;
+  flex: 1;
+}
+
+.scheduleDate {
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--color-text-main);
+}
+
+.scheduleRight {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.statusBadge {
+  font-size: 0.75rem;
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  font-weight: 500;
+  border: 1px solid;
+}
+
+.badgeAvailable {
+  color: #1a472a;
+  border-color: #1a472a;
+  background-color: rgba(26, 71, 42, 0.05);
+}
+
+.badgeSoldOut {
+  color: #999;
+  border-color: #ddd;
+  background-color: #f5f5f5;
 }
 
 .remainingSeats {

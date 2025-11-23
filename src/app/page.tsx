@@ -23,6 +23,7 @@ export default function Home() {
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
   const [peopleCount, setPeopleCount] = useState(1);
+  const [productType, setProductType] = useState('tree');
 
   // Class Schedule
   const [selectedSchedule, setSelectedSchedule] = useState('');
@@ -98,7 +99,8 @@ export default function Home() {
       const d = new Date(`${year}-${pad(mm)}-${pad(dd)}T${pad(hh)}:${pad(minutes)}`);
       const dayNames = ['일', '월', '화', '수', '목', '금', '토'];
       const dayPart = Number.isNaN(d.getTime()) ? '' : ` (${dayNames[d.getDay()]})`;
-      return `${pad(mm)}월 ${pad(dd)}일${dayPart} ${pad(hh)}:${pad(minutes)}`;
+      // Removed padding for month and day as requested
+      return `${mm}월 ${dd}일${dayPart} ${pad(hh)}:${pad(minutes)}`;
     }
     return value;
   };
@@ -133,6 +135,7 @@ export default function Home() {
           agreed,
           peopleCount,
           totalAmount: currentPrice,
+          productType,
         }),
       });
 
@@ -177,7 +180,18 @@ export default function Home() {
 
           <div className={styles.bankInfo}>
             <div className={styles.bankLabel}>입금 계좌 안내</div>
-            <div className={styles.account}>{bankName} {accountNumber}</div>
+            <div className={styles.accountRow}>
+              <div className={styles.account}>{accountNumber} {bankName}</div>
+              <button
+                className={styles.copyButton}
+                onClick={() => {
+                  navigator.clipboard.writeText(`${accountNumber} ${bankName}`);
+                  alert('계좌번호가 복사되었습니다.');
+                }}
+              >
+                복사
+              </button>
+            </div>
             <div className={styles.depositor}>예금주: {depositor}</div>
             <div className={styles.depositor}>금액: {currentPrice.toLocaleString('ko-KR')}원</div>
           </div>
@@ -238,11 +252,49 @@ export default function Home() {
               label="연락처"
               placeholder="010-0000-0000"
               value={phone}
-              onChange={(e) => setPhone(e.target.value)}
+              onChange={(e) => {
+                const val = e.target.value.replace(/[^0-9]/g, '');
+                let formatted = val;
+                if (val.length > 3 && val.length <= 7) {
+                  formatted = `${val.slice(0, 3)}-${val.slice(3)}`;
+                } else if (val.length > 7) {
+                  formatted = `${val.slice(0, 3)}-${val.slice(3, 7)}-${val.slice(7, 11)}`;
+                }
+                setPhone(formatted);
+              }}
               type="tel"
+              inputMode="numeric" // Ensure numeric keypad
               required
               error={errors.phone}
             />
+
+            <div className={styles.peopleSelect}>
+              <label className={styles.inputLabel}>만들고 싶은 것</label>
+              <div className={styles.radioGroupRow}>
+                <label className={`${styles.radioLabelBox} ${productType === 'tree' ? styles.selectedBox : ''}`}>
+                  <input
+                    type="radio"
+                    name="productType"
+                    value="tree"
+                    checked={productType === 'tree'}
+                    onChange={() => setProductType('tree')}
+                    className={styles.hiddenRadio}
+                  />
+                  <span>트리</span>
+                </label>
+                <label className={`${styles.radioLabelBox} ${productType === 'wreath' ? styles.selectedBox : ''}`}>
+                  <input
+                    type="radio"
+                    name="productType"
+                    value="wreath"
+                    checked={productType === 'wreath'}
+                    onChange={() => setProductType('wreath')}
+                    className={styles.hiddenRadio}
+                  />
+                  <span>리스</span>
+                </label>
+              </div>
+            </div>
 
             <div className={styles.peopleSelect}>
               <label className={styles.inputLabel}>신청 인원</label>
@@ -294,10 +346,15 @@ export default function Home() {
                       disabled={isSoldOut}
                     />
                     <div className={styles.scheduleInfo}>
-                      <span className={styles.radioText}>{formatSchedule(schedule.time)}</span>
-                      <span className={styles.remainingSeats}>
-                        {isSoldOut ? '마감' : `잔여 ${schedule.remaining}석`}
-                      </span>
+                      <span className={styles.scheduleDate}>{formatSchedule(schedule.time)}</span>
+                      <div className={styles.scheduleRight}>
+                        <span className={styles.remainingSeats}>
+                          {isSoldOut ? '마감' : `${schedule.remaining}석 남음`}
+                        </span>
+                        <span className={`${styles.statusBadge} ${isSoldOut ? styles.badgeSoldOut : styles.badgeAvailable}`}>
+                          {isSoldOut ? '마감' : '예약 가능'}
+                        </span>
+                      </div>
                     </div>
                     {selectedSchedule === schedule.time && <span className={styles.checkIcon}>✓</span>}
                   </label>
