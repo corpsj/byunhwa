@@ -103,4 +103,8 @@
     .grid {
         row-gap: 0.4rem;
     }
+
+    .dot {
+        bottom: 3px;
+    }
 }
