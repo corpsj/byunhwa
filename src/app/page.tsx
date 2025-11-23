@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import styles from './page.module.css';
 import Button from '@/components/Button';
 import Input from '@/components/Input';
@@ -45,6 +45,11 @@ export default function Home() {
 
   // Validation Errors
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
+
+  // Refs for scrolling to error sections
+  const studentInfoRef = useRef<HTMLDivElement>(null);
+  const scheduleRef = useRef<HTMLDivElement>(null);
+  const agreementRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     setMounted(true);
@@ -119,6 +124,18 @@ export default function Home() {
     if (!agreed) newErrors.agreement = '주의사항에 동의해주세요.';
 
     setErrors(newErrors);
+
+    // Scroll to first error
+    if (Object.keys(newErrors).length > 0) {
+      if (newErrors.name || newErrors.phone) {
+        studentInfoRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      } else if (newErrors.schedule) {
+        scheduleRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      } else if (newErrors.agreement) {
+        agreementRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    }
+
     return Object.keys(newErrors).length === 0;
   };
 
@@ -244,7 +261,7 @@ export default function Home() {
 
         <div className={styles.form}>
           {/* Student Info */}
-          <div className={styles.section}>
+          <div className={styles.section} ref={studentInfoRef}>
             <h3 className={styles.sectionTitle}>01. 수강생 정보</h3>
             <Input
               label="성함"
@@ -332,7 +349,7 @@ export default function Home() {
           </div>
 
           {/* Class Schedule */}
-          <div className={styles.section}>
+          <div className={styles.section} ref={scheduleRef}>
             <h3 className={styles.sectionTitle}>02. 수강 희망 일정 (택 1)</h3>
 
             <Calendar
@@ -384,7 +401,7 @@ export default function Home() {
           </div>
 
           {/* Agreement */}
-          <div className={styles.section}>
+          <div className={styles.section} ref={agreementRef}>
             <h3 className={styles.sectionTitle}>03. 주의사항 동의</h3>
             <div className={styles.agreementBox}>
               <div className={styles.agreementText}>
