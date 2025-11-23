@@ -34,8 +34,17 @@
 }
 
 @media (max-width: 600px) {
+    .container {
+        gap: 1rem;
+    }
+
+    .container p {
+        font-size: 0.8rem;
+    }
+
     .contact {
         flex-direction: column;
         gap: 0.5rem;
+        font-size: 0.8rem;
     }
 }

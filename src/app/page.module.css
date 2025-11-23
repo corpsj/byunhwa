@@ -572,8 +572,9 @@
 }
 
 .timeChip.selectedTime {
-  background-color: var(--color-accent-main);
-  color: #ffffff;
+  background-color: var(--color-accent-main) !important;
+  color: #ffffff !important;
+  border-color: var(--color-accent-main) !important;
   box-shadow: 0 4px 12px rgba(114, 47, 55, 0.2);
 }
 
@@ -627,6 +628,24 @@
   }
 
   .bankInfo {
-    padding: 1.2rem;
+    padding: 1.2rem 1rem;
+  }
+
+  /* Text Size Reductions */
+  .agreementText {
+    font-size: 0.8rem;
+  }
+
+  .checkboxText {
+    font-size: 0.85rem;
+  }
+
+  .notice {
+    font-size: 0.75rem;
+  }
+
+  /* Increase Inner Box Size by reducing parent padding */
+  .successCard {
+    padding: 2rem 1rem;
   }
 }
