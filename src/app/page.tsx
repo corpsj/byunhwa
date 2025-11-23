@@ -4,7 +4,9 @@ import { useState, useEffect } from 'react';
 import styles from './page.module.css';
 import Button from '@/components/Button';
 import Input from '@/components/Input';
+import Calendar from '@/components/Calendar';
 import { defaultFormConfig } from '@/lib/formDefaults';
+import { isSameDay } from 'date-fns';
 
 type ScheduleOption = {
   time: string;
@@ -18,6 +20,7 @@ export default function Home() {
   const [orderSuccess, setOrderSuccess] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [submissionError, setSubmissionError] = useState('');
+  const [configLoaded, setConfigLoaded] = useState(false);
 
   // Student Info
   const [name, setName] = useState('');
@@ -27,6 +30,7 @@ export default function Home() {
 
   // Class Schedule
   const [selectedSchedule, setSelectedSchedule] = useState('');
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [schedules, setSchedules] = useState<ScheduleOption[]>([]);
 
   // Agreement
@@ -80,6 +84,8 @@ export default function Home() {
         setBackgroundImage(data.backgroundImage || '');
       } catch (error) {
         console.error('Failed to load form config', error);
+      } finally {
+        setConfigLoaded(true);
       }
     };
 
@@ -269,7 +275,7 @@ export default function Home() {
             />
 
             <div className={styles.peopleSelect}>
-              <label className={styles.inputLabel}>만들고 싶은 것</label>
+              <label className={styles.inputLabel}>만들고 싶은 것 <span className={styles.required}>*</span></label>
               <div className={styles.radioGroupRow}>
                 <label className={`${styles.radioLabelBox} ${productType === 'tree' ? styles.selectedBox : ''}`}>
                   <input
@@ -297,7 +303,7 @@ export default function Home() {
             </div>
 
             <div className={styles.peopleSelect}>
-              <label className={styles.inputLabel}>신청 인원</label>
+              <label className={styles.inputLabel}>신청 인원 <span className={styles.required}>*</span></label>
               <div className={styles.radioGroupRow}>
                 <label className={`${styles.radioLabelBox} ${peopleCount === 1 ? styles.selectedBox : ''}`}>
                   <input
@@ -319,7 +325,7 @@ export default function Home() {
                     onChange={() => setPeopleCount(2)}
                     className={styles.hiddenRadio}
                   />
-                  <span>2인 ({Number(price2).toLocaleString()}원) <span className={styles.discountBadge}>할인</span></span>
+                  <span>2인 ({Number(price2).toLocaleString()}원)</span>
                 </label>
               </div>
             </div>
@@ -328,39 +334,52 @@ export default function Home() {
           {/* Class Schedule */}
           <div className={styles.section}>
             <h3 className={styles.sectionTitle}>02. 수강 희망 일정 (택 1)</h3>
-            <div className={styles.radioGroup}>
-              {schedules.map((schedule) => {
-                const isSoldOut = schedule.remaining < peopleCount;
-                return (
-                  <label
-                    key={schedule.time}
-                    className={`${styles.radioLabel} ${selectedSchedule === schedule.time ? styles.selected : ''} ${isSoldOut ? styles.disabled : ''}`}
-                  >
-                    <input
-                      type="radio"
-                      name="schedule"
-                      value={schedule.time}
-                      checked={selectedSchedule === schedule.time}
-                      onChange={(e) => setSelectedSchedule(e.target.value)}
-                      className={styles.radioInput}
-                      disabled={isSoldOut}
-                    />
-                    <div className={styles.scheduleInfo}>
-                      <span className={styles.scheduleDate}>{formatSchedule(schedule.time)}</span>
-                      <div className={styles.scheduleRight}>
-                        <span className={styles.remainingSeats}>
-                          {isSoldOut ? '마감' : `${schedule.remaining}석 남음`}
-                        </span>
-                        <span className={`${styles.statusBadge} ${isSoldOut ? styles.badgeSoldOut : styles.badgeAvailable}`}>
-                          {isSoldOut ? '마감' : '예약 가능'}
-                        </span>
-                      </div>
-                    </div>
-                    {selectedSchedule === schedule.time && <span className={styles.checkIcon}>✓</span>}
-                  </label>
-                );
-              })}
-            </div>
+
+            <Calendar
+              schedules={schedules}
+              selectedDate={selectedDate}
+              onDateSelect={(date) => {
+                setSelectedDate(date);
+                setSelectedSchedule(''); // Reset time selection when date changes
+              }}
+            />
+
+            {selectedDate && (
+              <div className={styles.timeSelection}>
+                <p className={styles.timeLabel}>시간 선택</p>
+                <div className={styles.timeGrid}>
+                  {schedules
+                    .filter((s) => {
+                      const match = s.time.match(/(\d{1,2})월\s*(\d{1,2})일/);
+                      if (!match) return false;
+                      const year = new Date().getFullYear();
+                      const d = new Date(year, Number(match[1]) - 1, Number(match[2]));
+                      return isSameDay(d, selectedDate);
+                    })
+                    .map((schedule) => {
+                      const isSoldOut = schedule.remaining < peopleCount;
+                      const timeMatch = schedule.time.match(/(\d{2}):(\d{2})/);
+                      const timeStr = timeMatch ? `${timeMatch[1]}:${timeMatch[2]}` : schedule.time;
+
+                      return (
+                        <button
+                          key={schedule.time}
+                          className={`${styles.timeChip} ${selectedSchedule === schedule.time ? styles.selectedTime : ''
+                            } ${isSoldOut ? styles.disabledTime : ''}`}
+                          onClick={() => !isSoldOut && setSelectedSchedule(schedule.time)}
+                          disabled={isSoldOut}
+                        >
+                          <span className={styles.timeText}>{timeStr}</span>
+                          <span className={styles.seatText}>
+                            {isSoldOut ? '마감' : `${schedule.remaining}석`}
+                          </span>
+                        </button>
+                      );
+                    })}
+                </div>
+              </div>
+            )}
+
             {errors.schedule && <div className={styles.errorMessage}>{errors.schedule}</div>}
           </div>
 
@@ -391,11 +410,11 @@ export default function Home() {
         <div className={styles.submitWrapper}>
           <Button
             onClick={handleSubmit}
-            disabled={isSubmitting}
+            disabled={isSubmitting || !configLoaded}
             fullWidth
             size="large"
           >
-            {isSubmitting ? '신청 중...' : `${currentPrice.toLocaleString()}원 결제하기`}
+            {!configLoaded ? '로딩 중...' : isSubmitting ? '신청 중...' : `${currentPrice.toLocaleString()}원 결제하기`}
           </Button>
           {submissionError && <p className={styles.submitError}>{submissionError}</p>}
           <p className={styles.notice}>
