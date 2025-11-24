@@ -17,7 +17,13 @@ export const isAdminAuthed = async () => {
   const cookieStore = await cookies();
   const cookie = cookieStore.get(COOKIE_NAME)?.value;
   const token = getAdminToken();
-  return Boolean(token && cookie && crypto.timingSafeEqual(Buffer.from(token), Buffer.from(cookie)));
+
+  // Check if both exist and have the same length before using timingSafeEqual
+  if (!token || !cookie || token.length !== cookie.length) {
+    return false;
+  }
+
+  return crypto.timingSafeEqual(Buffer.from(token), Buffer.from(cookie));
 };
 
 export const requireAdmin = async () => {

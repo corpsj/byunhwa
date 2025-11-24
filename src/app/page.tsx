@@ -6,7 +6,7 @@ import Button from '@/components/Button';
 import Input from '@/components/Input';
 import Calendar from '@/components/Calendar';
 import { defaultFormConfig } from '@/lib/formDefaults';
-import { isSameDay } from 'date-fns';
+import { isScheduleOnDate, getScheduleTimeString } from '@/lib/scheduleUtils';
 
 type ScheduleOption = {
   time: string;
@@ -21,6 +21,7 @@ export default function Home() {
   const [mounted, setMounted] = useState(false);
   const [submissionError, setSubmissionError] = useState('');
   const [configLoaded, setConfigLoaded] = useState(false);
+  const [configLoadError, setConfigLoadError] = useState('');
 
   // Student Info
   const [name, setName] = useState('');
@@ -56,7 +57,10 @@ export default function Home() {
     const fetchConfig = async () => {
       try {
         const res = await fetch('/api/config', { cache: 'no-store' });
-        if (!res.ok) return;
+        if (!res.ok) {
+          setConfigLoadError('설정을 불러올 수 없습니다. 잠시 후 다시 시도해주세요.');
+          return;
+        }
         const data = await res.json();
 
         // Handle schedules: could be string[] (legacy) or object[] (new)
@@ -87,34 +91,15 @@ export default function Home() {
         setPrice(data.price || defaultFormConfig.price);
         setPrice2(data.price2 || defaultFormConfig.price2 || '150000');
         setBackgroundImage(data.backgroundImage || '');
+        setConfigLoaded(true);
       } catch (error) {
         console.error('Failed to load form config', error);
-      } finally {
-        setConfigLoaded(true);
+        setConfigLoadError('설정 로딩 중 오류가 발생했습니다. 페이지를 새로고침해주세요.');
       }
     };
 
     fetchConfig();
   }, []);
-
-  const formatSchedule = (value: string) => {
-    const match = value.match(/(\d{1,2})월\s*(\d{1,2})일.*?(\d{1,2}):(\d{2})/);
-    if (match) {
-      const [, mmStr, ddStr, hhStr, minStr] = match;
-      const mm = Number(mmStr);
-      const dd = Number(ddStr);
-      const hh = Number(hhStr);
-      const minutes = Number(minStr);
-      const pad = (n: number) => n.toString().padStart(2, '0');
-      const year = new Date().getFullYear();
-      const d = new Date(`${year}-${pad(mm)}-${pad(dd)}T${pad(hh)}:${pad(minutes)}`);
-      const dayNames = ['일', '월', '화', '수', '목', '금', '토'];
-      const dayPart = Number.isNaN(d.getTime()) ? '' : ` (${dayNames[d.getDay()]})`;
-      // Removed padding for month and day as requested
-      return `${mm}월 ${dd}일${dayPart} ${pad(hh)}:${pad(minutes)}`;
-    }
-    return value;
-  };
 
   const validateForm = () => {
     const newErrors: { [key: string]: string } = {};
@@ -259,6 +244,8 @@ export default function Home() {
           아래 양식을 작성하여 클래스를 신청해주세요.
         </p>
 
+        {configLoadError && <div className={styles.errorMessage}>{configLoadError}</div>}
+
         <div className={styles.form}>
           {/* Student Info */}
           <div className={styles.section} ref={studentInfoRef}>
@@ -366,17 +353,10 @@ export default function Home() {
                 <p className={styles.timeLabel}>시간 선택</p>
                 <div className={styles.timeGrid}>
                   {schedules
-                    .filter((s) => {
-                      const match = s.time.match(/(\d{1,2})월\s*(\d{1,2})일/);
-                      if (!match) return false;
-                      const year = new Date().getFullYear();
-                      const d = new Date(year, Number(match[1]) - 1, Number(match[2]));
-                      return isSameDay(d, selectedDate);
-                    })
+                    .filter((s) => isScheduleOnDate(s.time, selectedDate))
                     .map((schedule) => {
                       const isSoldOut = schedule.remaining < peopleCount;
-                      const timeMatch = schedule.time.match(/(\d{2}):(\d{2})/);
-                      const timeStr = timeMatch ? `${timeMatch[1]}:${timeMatch[2]}` : schedule.time;
+                      const timeStr = getScheduleTimeString(schedule.time);
 
                       return (
                         <button

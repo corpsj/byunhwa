@@ -5,6 +5,7 @@ import styles from './admin.module.css';
 import Button from '@/components/Button';
 import Input from '@/components/Input';
 import { defaultFormConfig } from '@/lib/formDefaults';
+import { formatSchedule } from '@/lib/scheduleUtils';
 
 type OrderStatus = 'pending' | 'confirmed' | 'cancelled';
 
@@ -137,25 +138,8 @@ export default function AdminPage() {
 
   useEffect(() => {
     void bootstrap();
-  }, [bootstrap]);
-
-  const formatSchedule = (value: string) => {
-    const match = value.match(/(\d{1,2})월\s*(\d{1,2})일.*?(\d{1,2}):(\d{2})/);
-    if (match) {
-      const [, mmStr, ddStr, hhStr, minStr] = match;
-      const mm = Number(mmStr);
-      const dd = Number(ddStr);
-      const hh = Number(hhStr);
-      const minutes = Number(minStr);
-      const pad = (n: number) => n.toString().padStart(2, '0');
-      const year = new Date().getFullYear();
-      const d = new Date(`${year}-${pad(mm)}-${pad(dd)}T${pad(hh)}:${pad(minutes)}`);
-      const dayNames = ['일', '월', '화', '수', '목', '금', '토'];
-      const dayPart = Number.isNaN(d.getTime()) ? '' : ` (${dayNames[d.getDay()]})`;
-      return `${pad(mm)}월 ${pad(dd)}일${dayPart} ${pad(hh)}:${pad(minutes)}`;
-    }
-    return value;
-  };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Run only once on mount to prevent infinite loop
 
   const handleLogin = async () => {
     setFetchError('');
@@ -255,7 +239,8 @@ export default function AdminPage() {
       const key = order.schedule || '미지정';
       if (!scheduleCounts[key]) scheduleCounts[key] = { count: 0, people: 0 };
 
-      if (order.status !== 'cancelled') {
+      // Only count confirmed orders for capacity calculation (consistent with API)
+      if (order.status === 'confirmed') {
         scheduleCounts[key].count += 1;
         scheduleCounts[key].people += (order.people_count || 1);
       }
@@ -583,7 +568,7 @@ export default function AdminPage() {
                   </thead>
                   <tbody>
                     {orders
-                      .filter((o) => o.schedule === selectedScheduleDetail && o.status !== 'cancelled')
+                      .filter((o) => o.schedule === selectedScheduleDetail && o.status === 'confirmed')
                       .map((order) => (
                         <tr key={order.id}>
                           <td>{order.name}</td>
@@ -592,10 +577,10 @@ export default function AdminPage() {
                           <td>{order.product_type === 'wreath' ? '리스' : '트리'}</td>
                         </tr>
                       ))}
-                    {orders.filter((o) => o.schedule === selectedScheduleDetail && o.status !== 'cancelled').length === 0 && (
+                    {orders.filter((o) => o.schedule === selectedScheduleDetail && o.status === 'confirmed').length === 0 && (
                       <tr>
                         <td colSpan={4} style={{ textAlign: 'center', color: '#999' }}>
-                          신청자가 없습니다.
+                          확정된 신청자가 없습니다.
                         </td>
                       </tr>
                     )}
