@@ -115,8 +115,8 @@ export default function Home() {
         setBankName(data.bankName || defaultFormConfig.bankName);
         setAccountNumber(data.accountNumber || defaultFormConfig.accountNumber);
         setDepositor(data.depositor || defaultFormConfig.depositor);
-        setPrice(data.price || defaultFormConfig.price);
-        setPrice2(data.price2 || defaultFormConfig.price2 || '150000');
+        setPrice(data.price !== undefined ? String(data.price) : defaultFormConfig.price);
+        setPrice2(data.price2 !== undefined ? String(data.price2) : (defaultFormConfig.price2 || '150000'));
         setBackgroundImage(data.backgroundImage || '');
         setConfigLoaded(true);
       } catch (error) {
