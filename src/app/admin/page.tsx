@@ -342,6 +342,11 @@ export default function AdminPage() {
     }));
   };
 
+  const handlePriceChange = (field: 'price' | 'price2', value: string) => {
+    const normalized = value.replace(/[^0-9]/g, '');
+    setConfig((prev) => ({ ...prev, [field]: normalized }));
+  };
+
   const handleConfigSave = async () => {
     setConfigSaving(true);
     setFetchError('');
@@ -737,18 +742,22 @@ export default function AdminPage() {
             placeholder="예) 1234-56-789012"
           />
 
-          <div className={styles.gridTwo}>
+                                        <div className={styles.gridTwo}>
             <Input
               label="1인 가격"
               value={config.price}
-              onChange={(e) => setConfig((prev) => ({ ...prev, price: e.target.value.replace(/[^0-9]/g, '') }))}
-              placeholder="예) 80000"
+              type="number"
+              inputMode="numeric"
+              onChange={(e) => handlePriceChange('price', e.target.value)}
+              placeholder="예: 80000"
             />
             <Input
-              label="2인 가격 (할인가)"
+              label="2인 가격(동반인)"
               value={config.price2}
-              onChange={(e) => setConfig((prev) => ({ ...prev, price2: e.target.value.replace(/[^0-9]/g, '') }))}
-              placeholder="예) 150000"
+              type="number"
+              inputMode="numeric"
+              onChange={(e) => handlePriceChange('price2', e.target.value)}
+              placeholder="예: 150000"
             />
           </div>
 
