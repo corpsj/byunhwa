@@ -8,6 +8,8 @@ import {
     eachDayOfInterval,
     isSameMonth,
     isSameDay,
+    isBefore,
+    startOfDay,
 } from 'date-fns';
 import { ko } from 'date-fns/locale';
 import styles from './Calendar.module.css';
@@ -46,6 +48,8 @@ export default function Calendar({ schedules, selectedDate, onDateSelect }: Cale
         end: endDate,
     });
 
+    const today = startOfDay(new Date());
+
 
 
     return (
@@ -70,15 +74,17 @@ export default function Calendar({ schedules, selectedDate, onDateSelect }: Cale
                     const isScheduled = hasSchedule(day);
                     const isSelected = selectedDate && isSameDay(day, selectedDate);
                     const isCurrentMonth = isSameMonth(day, monthStart);
+                    const isPast = isBefore(day, today);
+                    const isDisabled = !isCurrentMonth || isPast;
 
                     return (
                         <div
                             key={day.toString()}
-                            className={`${styles.cell} ${!isCurrentMonth ? styles.disabled : ''
+                            className={`${styles.cell} ${isDisabled ? styles.disabled : ''
                                 } ${isSelected ? styles.selected : ''} ${isScheduled ? styles.scheduled : ''
                                 }`}
                             onClick={() => {
-                                if (isScheduled) onDateSelect(day);
+                                if (isScheduled && !isDisabled) onDateSelect(day);
                             }}
                         >
                             <span className={styles.dayNumber}>{format(day, 'd')}</span>
