@@ -19,6 +19,7 @@ const twilioSid = process.env.TWILIO_ACCOUNT_SID;
 const twilioAuth = process.env.TWILIO_AUTH_TOKEN;
 const twilioFrom = process.env.TWILIO_FROM_NUMBER;
 const adminPhone = process.env.ADMIN_PHONE_NUMBER;
+const fallbackContact = '010-4086-6231';
 const resendApiKey = process.env.RESEND_API_KEY;
 
 const hasTwilioCreds = Boolean(twilioSid && twilioAuth && twilioFrom);
@@ -183,4 +184,3 @@ export const notifyNewOrder = async (order: OrderForNotify, emailConfig?: EmailC
 
   await Promise.allSettled(tasks);
 };
-const fallbackContact = '010-4086-6231';

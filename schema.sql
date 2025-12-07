@@ -15,6 +15,6 @@ ADD COLUMN IF NOT EXISTS email_notification_enabled BOOLEAN DEFAULT false,
 ADD COLUMN IF NOT EXISTS admin_email TEXT;
 
 -- Note: The 'schedules' column in form_config is already a JSONB or Text array.
--- We will now store objects like {"time": "12월 25일 14:00", "capacity": 4}
+-- We will now store objects like {"time": "12??25??14:00", "capacity": 4}
 -- instead of just strings. Existing string values will need to be migrated
 -- or handled gracefully by the application code (which we will do).
