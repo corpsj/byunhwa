@@ -1,0 +1,651 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Mobile App Layout */
+.hero {
+  text-align: center;
+  padding: 1.5rem 1.5rem 1rem;
+  /* Further Reduced padding */
+  background-color: var(--color-bg-main);
+  width: 100%;
+  animation: fadeIn 0.6s ease-out;
+}
+
+.title {
+  font-size: 2.8rem;
+  /* Slightly smaller for mobile */
+  margin-bottom: 1rem;
+  line-height: 1.15;
+  color: var(--color-text-main);
+  letter-spacing: -0.03em;
+}
+
+.highlight {
+  color: var(--color-accent-main);
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-weight: 400;
+}
+
+.subtitle {
+  font-size: 1.1rem;
+  color: var(--color-text-muted);
+  margin-bottom: 2.5rem;
+  line-height: 1.6;
+  font-weight: 300;
+  padding: 0 1rem;
+}
+
+/* Features as Horizontal Scroll or Stacked Cards */
+.features {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 2rem 1.25rem;
+  background-color: #FFFFFF;
+  border-radius: 24px 24px 0 0;
+  /* Rounded top sheet look */
+  box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.03);
+  margin-top: -1rem;
+  position: relative;
+  z-index: 10;
+}
+
+.featureItem {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  text-align: left;
+  padding: 1.5rem;
+  background-color: var(--color-bg-input);
+  border-radius: 16px;
+  border: none;
+  box-shadow: none;
+}
+
+.featureItem:hover {
+  transform: none;
+  box-shadow: none;
+}
+
+.featureItem h3 {
+  color: var(--color-text-main);
+  font-family: var(--font-sans);
+  font-weight: 600;
+  margin-bottom: 0.2rem;
+  font-size: 1.1rem;
+}
+
+.featureItem p {
+  color: var(--color-text-muted);
+  font-size: 0.95rem;
+  line-height: 1.4;
+  margin: 0;
+}
+
+/* Order Form Styles - Mobile First */
+.orderContainer {
+  padding: 1.5rem 1.25rem 6rem;
+  /* Bottom padding for sticky button */
+  animation: fadeIn 0.4s ease-out;
+}
+
+.formTitle {
+  font-size: 2rem;
+  text-align: left;
+  color: var(--color-text-main);
+  margin-bottom: 0.5rem;
+  font-family: var(--font-serif);
+  padding-left: 0.5rem;
+}
+
+.formDescription {
+  text-align: left;
+  color: var(--color-text-muted);
+  margin-bottom: 2.5rem;
+  font-size: 1rem;
+  padding-left: 0.5rem;
+}
+
+.form {
+  background-color: transparent;
+  /* Remove card bg for cleaner mobile look */
+  padding: 0;
+  box-shadow: none;
+  border: none;
+}
+
+.section {
+  margin-bottom: 2.5rem;
+  padding-bottom: 0;
+  border-bottom: none;
+  background-color: #FFFFFF;
+  padding: 1.5rem;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
+}
+
+.section:last-of-type {
+  margin-bottom: 1rem;
+}
+
+.sectionTitle {
+  font-size: 1.1rem;
+  color: var(--color-accent-main);
+  margin-bottom: 1.2rem;
+  font-family: var(--font-sans);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  font-size: 0.85rem;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.textareaWrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  margin-bottom: 0;
+}
+
+.label {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--color-text-main);
+  letter-spacing: 0.02em;
+}
+
+.textarea {
+  padding: 1rem;
+  border: 1px solid transparent;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-family: inherit;
+  resize: none;
+  /* Disable resize on mobile */
+  background-color: var(--color-bg-input);
+  color: var(--color-text-main);
+  transition: var(--transition-smooth);
+  min-height: 120px;
+  width: 100%;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.textarea:focus {
+  outline: none;
+  background-color: #FFFFFF;
+  box-shadow: 0 0 0 2px var(--color-accent-main);
+}
+
+/* Sticky Bottom Button */
+.submitWrapper {
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 430px;
+  /* Match app container */
+  padding: 1rem 1.25rem 2rem;
+  /* Safe area padding */
+  background: linear-gradient(to top, #FFFFFF 80%, rgba(255, 255, 255, 0));
+  z-index: 50;
+  text-align: center;
+}
+
+.notice {
+  margin-top: 0.8rem;
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+}
+
+.submitError {
+  margin-top: 0.75rem;
+  color: #d64545;
+  font-size: 0.9rem;
+  text-align: center;
+}
+
+/* Success Page Styles */
+.successContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 80vh;
+  padding: 2rem 1.5rem;
+  animation: fadeIn 0.6s ease-out;
+}
+
+.successCard {
+  background-color: #FFFFFF;
+  padding: 3rem 2rem;
+  border-radius: 24px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.05);
+  text-align: center;
+  width: 100%;
+  border: none;
+}
+
+.icon {
+  width: 80px;
+  height: 80px;
+  background-color: var(--color-accent-main);
+  color: #FFFFFF;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 3rem;
+  margin: 0 auto 2rem;
+  box-shadow: 0 10px 30px rgba(114, 47, 55, 0.3);
+}
+
+.successTitle {
+  font-size: 1.8rem;
+  color: var(--color-text-main);
+  margin-bottom: 1rem;
+  font-family: var(--font-serif);
+}
+
+.successMessage {
+  color: var(--color-text-muted);
+  margin-bottom: 2.5rem;
+  line-height: 1.6;
+  font-size: 1.05rem;
+}
+
+.bankInfo {
+  background-color: var(--color-bg-input);
+  padding: 1.5rem;
+  border-radius: 16px;
+  margin-bottom: 2.5rem;
+  border: none;
+}
+
+.bankLabel {
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+  margin-bottom: 0.5rem;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.account {
+  font-size: 1rem;
+  /* Reduced from 1.25rem */
+  font-weight: 600;
+  color: var(--color-text-main);
+  font-family: var(--font-sans);
+  letter-spacing: -0.02em;
+  margin-bottom: 0;
+}
+
+.accountRow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* Center align */
+  gap: 0.5rem;
+  margin-bottom: 0.3rem;
+}
+
+.copyButton {
+  background-color: #f0f0f0;
+  border: 1px solid #dcdcdc;
+  border-radius: 6px;
+  padding: 0.2rem 0.5rem;
+  font-size: 0.8rem;
+  cursor: pointer;
+  color: var(--color-text-muted);
+  transition: all 0.2s;
+}
+
+.copyButton:hover {
+  background-color: #e0e0e0;
+  color: var(--color-text-main);
+}
+
+.depositor {
+  font-size: 0.95rem;
+  color: var(--color-text-muted);
+}
+
+/* Radio Group Styles */
+.radioGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.radioLabel {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.2rem;
+  background-color: var(--color-bg-input);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: var(--transition-smooth);
+  border: 1px solid transparent;
+}
+
+.radioLabel.selected {
+  background-color: #FFFFFF;
+  border-color: var(--color-accent-main);
+  box-shadow: 0 4px 12px rgba(114, 47, 55, 0.1);
+}
+
+.radioInput {
+  display: none;
+  /* Hide default radio */
+}
+
+.radioText {
+  font-size: 1rem;
+  color: var(--color-text-main);
+  font-weight: 500;
+}
+
+.checkIcon {
+  color: var(--color-accent-main);
+  font-weight: bold;
+}
+
+/* Agreement Styles */
+.agreementBox {
+  background-color: var(--color-bg-input);
+  padding: 1.2rem;
+  border-radius: 12px;
+}
+
+.agreementText {
+  font-size: 0.9rem;
+  color: var(--color-text-muted);
+  line-height: 1.6;
+  margin-bottom: 1.5rem;
+  white-space: pre-line;
+}
+
+.checkboxLabel {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  cursor: pointer;
+  padding-top: 0.5rem;
+  border-top: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.checkboxInput {
+  width: 20px;
+  height: 20px;
+  accent-color: var(--color-accent-main);
+  cursor: pointer;
+}
+
+.checkboxText {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--color-text-main);
+}
+
+.errorMessage {
+  font-size: 0.85rem;
+  color: var(--color-error);
+  margin-top: 0.5rem;
+  display: flex;
+  align-items: center;
+}
+
+.actions {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+/* Background Image */
+.backgroundImage {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+  background-position: center;
+  z-index: -1;
+  opacity: 0.15;
+  pointer-events: none;
+}
+
+/* People Selection */
+.peopleSelect {
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.inputLabel {
+  display: block;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--color-text-main);
+  margin-bottom: 0.8rem;
+}
+
+.radioGroupRow {
+  display: flex;
+  gap: 0.8rem;
+}
+
+.radioLabelBox {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  background-color: var(--color-bg-input);
+  border-radius: 12px;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: var(--transition-smooth);
+  font-size: 0.95rem;
+  color: var(--color-text-main);
+  position: relative;
+}
+
+.radioLabelBox.selectedBox {
+  background-color: #FFFFFF;
+  border-color: var(--color-accent-main);
+  box-shadow: 0 4px 12px rgba(114, 47, 55, 0.1);
+  font-weight: 600;
+  color: var(--color-accent-main);
+}
+
+.hiddenRadio {
+  display: none;
+}
+
+.discountBadge {
+  background-color: #ffeaea;
+  color: #d64545;
+  font-size: 0.7rem;
+  padding: 0.1rem 0.4rem;
+  border-radius: 4px;
+  margin-left: 0.4rem;
+  font-weight: 700;
+}
+
+/* Schedule Item Updates */
+.scheduleInfo {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex: 1;
+}
+
+.scheduleDate {
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--color-text-main);
+}
+
+.scheduleRight {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.statusBadge {
+  font-size: 0.75rem;
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  font-weight: 500;
+  border: 1px solid;
+}
+
+.badgeAvailable {
+  color: #1a472a;
+  border-color: #1a472a;
+  background-color: rgba(26, 71, 42, 0.05);
+}
+
+.badgeSoldOut {
+  color: #999;
+  border-color: #ddd;
+  background-color: #f5f5f5;
+}
+
+.remainingSeats {
+  font-size: 0.8rem;
+  color: var(--color-accent-main);
+  font-weight: 500;
+}
+
+/* Time Selection Styles */
+.timeSelection {
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid rgba(0, 0, 0, 0.05);
+  animation: fadeIn 0.3s ease-out;
+}
+
+.timeLabel {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--color-text-main);
+  margin-bottom: 1rem;
+}
+
+.timeGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  gap: 0.8rem;
+}
+
+.timeChip {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 0.8rem 0.5rem;
+  background-color: var(--color-bg-input);
+  border: 1px solid transparent;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+  color: var(--color-text-main);
+  text-decoration: none;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.timeChip:hover:not(:disabled) {
+  background-color: #f0f0f0;
+}
+
+.timeChip.selectedTime {
+  background-color: var(--color-accent-main) !important;
+  color: #ffffff !important;
+  border-color: var(--color-accent-main) !important;
+  box-shadow: 0 4px 12px rgba(114, 47, 55, 0.2);
+}
+
+.timeChip.disabledTime {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background-color: #f5f5f5;
+}
+
+.timeText {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 0.2rem;
+}
+
+.seatText {
+  font-size: 0.75rem;
+  font-weight: 400;
+}
+
+.timeChip.selectedTime .seatText {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+/* Small Screen Optimizations */
+@media (max-width: 375px) {
+  .radioLabelBox {
+    padding: 0.8rem 0.5rem;
+    font-size: 0.85rem;
+  }
+
+  .account {
+    font-size: 0.9rem;
+  }
+
+  .bankLabel {
+    font-size: 0.8rem;
+  }
+
+  .section {
+    padding: 1.2rem;
+  }
+
+  .copyButton {
+    padding: 0.15rem 0.4rem;
+    font-size: 0.75rem;
+  }
+
+  .accountRow {
+    gap: 0.3rem;
+  }
+
+  .bankInfo {
+    padding: 1.2rem 1rem;
+  }
+
+  /* Text Size Reductions */
+  .agreementText {
+    font-size: 0.8rem;
+  }
+
+  .checkboxText {
+    font-size: 0.85rem;
+  }
+
+  .notice {
+    font-size: 0.75rem;
+  }
+
+  /* Increase Inner Box Size by reducing parent padding */
+  .successCard {
+    padding: 2rem 1rem;
+  }
+}

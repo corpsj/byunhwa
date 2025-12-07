@@ -1,0 +1,101 @@
+.header {
+    background-color: var(--color-bg-main);
+    border-bottom: 1px solid var(--color-border);
+    padding: 1rem 0;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.container {
+    display: flex;
+    justify-content: space-between;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    display: flex;
+    justify-content: center;
+    /* Center logo for app feel */
+    align-items: center;
+    position: relative;
+    height: 44px;
+    /* Standard touch target height */
+}
+
+.logo {
+    font-family: var(--font-serif);
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--color-sage-green);
+    text-decoration: none;
+    display: flex;
+    align-items: baseline;
+    gap: 0.5rem;
+}
+
+.subLogo {
+    font-size: 0.875rem;
+    color: var(--color-charcoal);
+    font-weight: 400;
+}
+
+.logoWrapper {
+    display: flex;
+    align-items: center;
+    height: 100%;
+}
+
+.logoWrapper:hover {
+    opacity: 1;
+    transform: scale(1.02);
+}
+
+.logoLink {
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+}
+
+.logoText {
+    font-family: var(--font-serif);
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--color-text-main);
+    letter-spacing: -0.02em;
+    line-height: 1;
+}
+
+/* Hide nav for now, or make it a bottom tab bar if needed. 
+   For this single page flow, we might not need top nav links. */
+.nav {
+    display: none;
+}
+
+.navLink {
+    color: var(--color-text-main);
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 0.95rem;
+    letter-spacing: 0.02em;
+    transition: var(--transition-smooth);
+    position: relative;
+}
+
+.navLink::after {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 1px;
+    bottom: -4px;
+    left: 0;
+    background-color: var(--color-accent-main);
+    transition: var(--transition-smooth);
+}
+
+.navLink:hover {
+    color: var(--color-accent-main);
+}
+
+.navLink:hover::after {
+    width: 100%;
+}
