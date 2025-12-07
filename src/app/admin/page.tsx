@@ -742,7 +742,7 @@ export default function AdminPage() {
             placeholder="예) 1234-56-789012"
           />
 
-                                        <div className={styles.gridTwo}>
+          <div className={styles.gridTwo}>
             <Input
               label="1인 가격"
               value={config.price}
